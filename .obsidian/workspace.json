@@ -186,6 +186,7 @@
   },
   "active": "a4a333d5ee2bc80f",
   "lastOpenFiles": [
+    "docs/guia-integracion-equipo.md",
     "supabase/seed.sql",
     "docs/supabase-contraseña.md",
     "docs/integracion.md",
@@ -198,7 +199,6 @@
     "lib/features/reservas/providers/reservas_provider.dart",
     "lib/features/reservas/presentation/widgets",
     "lib/features/reservas/presentation/screens",
-    "lib/features/reservas/data/reserva_repository.dart",
     "docs/brief-v0.2.md",
     "docs/brief-v0.1.md",
     "docs/research/evidencias.md",
