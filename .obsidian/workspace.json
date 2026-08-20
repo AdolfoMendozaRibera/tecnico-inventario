@@ -11,14 +11,10 @@
             "id": "e5397e7ce2b5615e",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "brief/Brief-v.3.0/app map-v0.1.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "app map-v0.1"
+              "title": "Nueva pestaña"
             }
           }
         ]
@@ -188,8 +184,31 @@
       "bases:Crear nueva base": false
     }
   },
-  "active": "e5397e7ce2b5615e",
+  "active": "a4a333d5ee2bc80f",
   "lastOpenFiles": [
+    "supabase/seed.sql",
+    "docs/supabase-contraseña.md",
+    "docs/integracion.md",
+    "pubspec.yaml",
+    "lib/shared/widgets/loading_indicator.dart",
+    "lib/shared/widgets",
+    "lib/shared",
+    "lib/features/reservas/presentation/screens/reservar_screen.dart",
+    "lib/features/reservas/presentation/screens/mis_reservas_screen.dart",
+    "lib/features/reservas/providers/reservas_provider.dart",
+    "lib/features/reservas/presentation/widgets",
+    "lib/features/reservas/presentation/screens",
+    "lib/features/reservas/data/reserva_repository.dart",
+    "docs/brief-v0.2.md",
+    "docs/brief-v0.1.md",
+    "docs/research/evidencias.md",
+    "docs/brief-v0.3/persona-v0.1.md",
+    "docs/brief-v0.3/flujo-v0.1.md",
+    "docs/brief-v0.3/app-map-v0.1.md",
+    "docs/estructura-proyecto.md",
+    "docs/srs-v0.2.md",
+    "srs-v0.2.md",
+    "estructura-proyecto.md",
     "brief/Brief-v.3.0/flujo-v0.1.md",
     "brief/Brief-v.3.0/persona-v0.1.md",
     "brief/Brief-v.3.0/app map-v0.1.md"

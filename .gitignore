@@ -1,0 +1,23 @@
+# Archivos sensibles con credenciales o contraseñas
+docs/supabase-contraseña.md
+.env
+.env.*
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,5 @@
+// features/reservas/presentation/widgets/
+//
+// Widgets específicos de la feature reservas.
+// Por ahora vacío — se agregarán widgets aquí cuando la feature se implemente.
+// Ejemplo futuro: ConfirmacionReservaWidget (RF-05), ItemReservaWidget (RF-06).

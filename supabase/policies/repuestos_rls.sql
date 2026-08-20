@@ -1,0 +1,1 @@
+-- TODO: Politicas RLS + constraint anti-race-condition (RNF-06)

@@ -1,0 +1,26 @@
+name: tecnico_inventario
+description: "Gestión de repuestos reservados — Taller Técnico. MVP IHC 2026."
+publish_to: "none"
+
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Estado — Provider (decisión arquitectural, ver docs/srs-v0.2.md sección 3)
+  provider: ^6.1.2
+
+  # Backend — Supabase (Auth + DB + Realtime + RLS)
+  supabase_flutter: ^2.5.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
