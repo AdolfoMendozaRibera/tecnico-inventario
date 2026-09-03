@@ -7,6 +7,7 @@ class Repuesto {
   final String? equipoDestino;
   final String? motivo;
   final String? reservadoPor;
+  final DateTime? fechaReserva;
 
   Repuesto({
     required this.id,
@@ -17,6 +18,7 @@ class Repuesto {
     this.equipoDestino,
     this.motivo,
     this.reservadoPor,
+    this.fechaReserva,
   });
 
   factory Repuesto.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,9 @@ class Repuesto {
       equipoDestino: json['equipo_destino'],
       motivo: json['motivo'],
       reservadoPor: json['reservado_por'],
+      fechaReserva: json['fecha_reserva'] != null 
+          ? DateTime.tryParse(json['fecha_reserva'].toString()) 
+          : null,
     );
   }
 }

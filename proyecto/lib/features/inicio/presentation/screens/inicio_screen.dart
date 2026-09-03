@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/supabase_client.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../repuestos/providers/repuestos_provider.dart';
 
 class InicioScreen extends StatelessWidget {
@@ -9,15 +11,21 @@ class InicioScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Resumen del Taller', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          'Resumen del Taller',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+            letterSpacing: -0.4,
+          ),
+        ),
         elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar Sesión',
             onPressed: () {
               SupabaseService.client.auth.signOut();
               context.go('/login');
@@ -28,51 +36,93 @@ class InicioScreen extends StatelessWidget {
       body: SafeArea(
         child: Consumer<RepuestosProvider>(
           builder: (context, provider, child) {
-            return Padding(
-              padding: const EdgeInsets.all(24.0), // Escala 8px: 24
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Orientar
+                  // Título principal según Figma (style_PJIW5L)
                   Text(
                     'Estado Actual del Inventario',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24, // Jerarquía principal
+                    style: GoogleFonts.inter(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                      letterSpacing: -0.5,
+                      height: 1.4,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8), // Escala 8px: 8
-                  Text(
-                    'Hola, aquí puedes ver los repuestos disponibles y tus reservas.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  const SizedBox(height: 32), // Escala 8px: 32
+                  const SizedBox(height: 8),
                   
-                  // Informar
+                  // Subtítulo según Figma (style_9OBJAY)
+                  Text(
+                    'Hola, aquí puedes ver los repuestos disponibles\ny tus reservas.',
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textSecondary,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 36),
+                  
+                  // Fila de Tarjetas según Figma (Card 3:3004 y Card 3:3020)
                   Row(
                     children: [
+                      // Tarjeta Disponibles (Verde Figma)
                       Expanded(
                         child: _buildStatCard(
-                          context, 
-                          title: 'Disponibles', 
-                          count: provider.disponibles.length.toString(), 
-                          icon: Icons.check_circle_outline, 
-                          color: Colors.green
+                          title: 'Disponibles',
+                          count: provider.disponibles.length.toString(),
+                          bgColor: AppColors.statGreenBg,
+                          borderColor: AppColors.statGreenBorder,
+                          textColor: AppColors.statGreenText,
+                          icon: Icons.check_circle_outline,
                         ),
                       ),
-                      const SizedBox(width: 16), // Escala 8px: 16
+                      const SizedBox(width: 16),
+                      // Tarjeta Reservados (Naranja Figma)
                       Expanded(
                         child: _buildStatCard(
-                          context, 
-                          title: 'Reservados', 
-                          count: provider.reservados.length.toString(), 
-                          icon: Icons.pending_actions, 
-                          color: Colors.orange
+                          title: 'Reservados',
+                          count: provider.reservados.length.toString(),
+                          bgColor: AppColors.statOrangeBg,
+                          borderColor: AppColors.statOrangeBorder,
+                          textColor: AppColors.statOrangeText,
+                          icon: Icons.pending_actions,
                         ),
                       ),
                     ],
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  // Resumen informativo
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.cardBg,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.cardBorder),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outline, color: AppColors.yellowHighlight, size: 28),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Text(
+                            'Tienes ${provider.misReservas.length} reserva(s) activa(s) a tu nombre.',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -83,32 +133,50 @@ class InicioScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(BuildContext context, {required String title, required String count, required IconData icon, required Color color}) {
+  Widget _buildStatCard({
+    required String title,
+    required String count,
+    required Color bgColor,
+    required Color borderColor,
+    required Color textColor,
+    required IconData icon,
+  }) {
     return Container(
-      padding: const EdgeInsets.all(16.0), // Escala 8px: 16
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16), // Escala 8px: 16
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: bgColor,
+        borderRadius: BorderRadius.circular(8), // Border radius 8px de Figma
+        border: Border.all(color: borderColor, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: borderColor.withValues(alpha: 0.2),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 40, color: color), // Jerarquía visual
-          const SizedBox(height: 16), // Escala 8px: 16
+          Icon(icon, size: 36, color: textColor),
+          const SizedBox(height: 12),
           Text(
-            count, 
-            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.bold, 
-              color: color,
-              fontSize: 32, // Dato principal destacado
+            count,
+            style: GoogleFonts.inter(
+              fontSize: 34,
+              fontWeight: FontWeight.w700,
+              color: textColor,
+              letterSpacing: -1,
             ),
           ),
-          const SizedBox(height: 8), // Escala 8px: 8
+          const SizedBox(height: 6),
           Text(
-            title, 
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+            title,
+            style: GoogleFonts.inter(
               fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+              letterSpacing: -0.2,
             ),
           ),
         ],
