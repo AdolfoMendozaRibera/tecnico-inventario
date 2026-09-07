@@ -63,8 +63,27 @@ class AppTheme {
       ),
     );
 
+    final baseTextTheme = GoogleFonts.interTextTheme(base.textTheme);
+    TextStyle? w600(TextStyle? style) => style?.copyWith(fontWeight: FontWeight.w600);
+
     return base.copyWith(
-      textTheme: GoogleFonts.interTextTheme(base.textTheme),
+      textTheme: baseTextTheme.copyWith(
+        displayLarge: w600(baseTextTheme.displayLarge),
+        displayMedium: w600(baseTextTheme.displayMedium),
+        displaySmall: w600(baseTextTheme.displaySmall),
+        headlineLarge: w600(baseTextTheme.headlineLarge),
+        headlineMedium: w600(baseTextTheme.headlineMedium),
+        headlineSmall: w600(baseTextTheme.headlineSmall),
+        titleLarge: w600(baseTextTheme.titleLarge),
+        titleMedium: w600(baseTextTheme.titleMedium),
+        titleSmall: w600(baseTextTheme.titleSmall),
+        bodyLarge: w600(baseTextTheme.bodyLarge),
+        bodyMedium: w600(baseTextTheme.bodyMedium),
+        bodySmall: w600(baseTextTheme.bodySmall),
+        labelLarge: w600(baseTextTheme.labelLarge),
+        labelMedium: w600(baseTextTheme.labelMedium),
+        labelSmall: w600(baseTextTheme.labelSmall),
+      ),
     );
   }
 
