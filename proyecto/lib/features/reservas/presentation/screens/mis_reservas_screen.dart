@@ -139,22 +139,26 @@ class MisReservasScreen extends StatelessWidget {
                       if (accion == null || !context.mounted) return;
 
                       if (accion == 'usar') {
-                        await provider.marcarComoUsado(repuesto.id);
+                        final exito = await provider.marcarComoUsado(repuesto.id);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Repuesto marcado como usado (descontado del inventario)'),
-                              backgroundColor: Colors.black87,
+                            SnackBar(
+                              content: Text(exito
+                                  ? 'Repuesto marcado como usado (descontado del inventario)'
+                                  : 'Error al marcar como usado: ${provider.lastError ?? "Rechazado por Supabase"}'),
+                              backgroundColor: exito ? Colors.black87 : Theme.of(context).colorScheme.error,
                             ),
                           );
                         }
                       } else if (accion == 'liberar') {
-                        await provider.liberarRepuesto(repuesto.id);
+                        final exito = await provider.liberarRepuesto(repuesto.id);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Repuesto liberado y devuelto a disponibles en el taller'),
-                              backgroundColor: Colors.black87,
+                            SnackBar(
+                              content: Text(exito
+                                  ? 'Repuesto liberado y devuelto a disponibles en el taller'
+                                  : 'Error al liberar el repuesto.'),
+                              backgroundColor: exito ? Colors.black87 : Theme.of(context).colorScheme.error,
                             ),
                           );
                         }

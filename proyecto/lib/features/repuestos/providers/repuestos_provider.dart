@@ -10,11 +10,13 @@ class RepuestosProvider extends ChangeNotifier {
   List<Repuesto> _misReservas = [];
   
   bool _isLoading = false;
+  String? _lastError;
 
   List<Repuesto> get disponibles => _disponibles;
   List<Repuesto> get reservados => _reservados;
   List<Repuesto> get misReservas => _misReservas;
   bool get isLoading => _isLoading;
+  String? get lastError => _lastError;
 
   Future<void> fetchRepuestos() async {
     _isLoading = true;
@@ -63,7 +65,8 @@ class RepuestosProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> liberarRepuesto(String repuestoId) async {
+  Future<bool> liberarRepuesto(String repuestoId) async {
+    _lastError = null;
     try {
       await _supabase.from('repuesto').update({
         'estado': 'disponible',
@@ -74,20 +77,27 @@ class RepuestosProvider extends ChangeNotifier {
       }).eq('id', repuestoId);
       
       await fetchRepuestos(); // Refrescar listas
+      return true;
     } catch (e) {
+      _lastError = e.toString();
       debugPrint('Error releasing: $e');
+      return false;
     }
   }
 
-  Future<void> marcarComoUsado(String repuestoId) async {
+  Future<bool> marcarComoUsado(String repuestoId) async {
+    _lastError = null;
     try {
       await _supabase.from('repuesto').update({
         'estado': 'usado',
       }).eq('id', repuestoId);
       
       await fetchRepuestos(); // Refrescar listas
+      return true;
     } catch (e) {
+      _lastError = e.toString();
       debugPrint('Error marking as used: $e');
+      return false;
     }
   }
 }

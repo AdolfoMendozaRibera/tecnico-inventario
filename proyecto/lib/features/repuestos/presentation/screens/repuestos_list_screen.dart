@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../providers/repuestos_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/reservation_card.dart';
+import '../../../../core/widgets/disponible_card.dart';
 import '../../../reservas/presentation/screens/reservar_screen.dart';
 import '../../../../core/supabase_client.dart';
 
@@ -80,60 +81,16 @@ class _ListaDisponibles extends StatelessWidget {
       itemCount: repuestos.length,
       itemBuilder: (context, index) {
         final repuesto = repuestos[index];
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.cardBorder),
-          ),
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            leading: CircleAvatar(
-              backgroundColor: repuesto.estado != 'disponible' 
-                  ? Colors.grey.shade200 
-                  : AppColors.yellowDefault.withValues(alpha: 0.2),
-              child: Icon(
-                Icons.memory, 
-                color: repuesto.estado != 'disponible' ? Colors.grey.shade400 : Colors.black87
+        return DisponibleCard(
+          repuesto: repuesto,
+          onReservar: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => ReservarScreen(
+                repuestoId: repuesto.id,
+                repuestoNombre: repuesto.nombre,
               ),
-            ),
-            title: Text(
-              repuesto.nombre,
-              style: GoogleFonts.inter(
-                fontWeight: FontWeight.w600, 
-                fontSize: 15,
-                color: repuesto.estado != 'disponible' ? Colors.grey.shade500 : null,
-              ),
-            ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 4.0),
-              child: Text(
-                'Categoría: ${repuesto.categoria}',
-                style: GoogleFonts.inter(fontSize: 13, color: Colors.grey.shade600),
-              ),
-            ),
-            trailing: ElevatedButton(
-              onPressed: repuesto.estado != 'disponible' ? null : () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => ReservarScreen(repuestoId: repuesto.id, repuestoNombre: repuesto.nombre)
-                ));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.yellowDefault,
-                foregroundColor: Colors.black,
-                disabledBackgroundColor: Colors.grey.shade200,
-                disabledForegroundColor: Colors.grey.shade500,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-              ),
-              child: Text(
-                repuesto.estado != 'disponible' ? 'Reservado' : 'Reservar',
-                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
+            ));
+          },
         );
       },
     );
@@ -308,28 +265,29 @@ class _ListaReservados extends StatelessWidget {
                       if (accion == null || !context.mounted) return;
 
                       if (accion == 'usar') {
-                        await context
-                            .read<RepuestosProvider>()
-                            .marcarComoUsado(repuesto.id);
+                        final provider = context.read<RepuestosProvider>();
+                        final exito = await provider.marcarComoUsado(repuesto.id);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  'Repuesto marcado como usado (descontado del inventario)'),
-                              backgroundColor: Colors.black87,
+                            SnackBar(
+                              content: Text(exito
+                                  ? 'Repuesto marcado como usado (descontado del inventario)'
+                                  : 'Error al marcar como usado: ${provider.lastError ?? "Rechazado por Supabase"}'),
+                              backgroundColor: exito ? Colors.black87 : Theme.of(context).colorScheme.error,
                             ),
                           );
                         }
                       } else if (accion == 'liberar') {
-                        await context
+                        final exito = await context
                             .read<RepuestosProvider>()
                             .liberarRepuesto(repuesto.id);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  'Repuesto liberado y devuelto al taller'),
-                              backgroundColor: Colors.black87,
+                            SnackBar(
+                              content: Text(exito
+                                  ? 'Repuesto liberado y devuelto al taller'
+                                  : 'Error al liberar el repuesto.'),
+                              backgroundColor: exito ? Colors.black87 : Theme.of(context).colorScheme.error,
                             ),
                           );
                         }

@@ -11,6 +11,7 @@ class Repuesto {
   /// Viene del JOIN con la tabla `tecnico` en el query del provider.
   final String? reservadoPorNombre;
   final DateTime? fechaReserva;
+  final DateTime? createdAt;
 
   const Repuesto({
     required this.id,
@@ -23,6 +24,7 @@ class Repuesto {
     this.reservadoPor,
     this.reservadoPorNombre,
     this.fechaReserva,
+    this.createdAt,
   });
 
   factory Repuesto.fromJson(Map<String, dynamic> json) {
@@ -42,6 +44,9 @@ class Repuesto {
       reservadoPorNombre: nombreTecnico,
       fechaReserva: json['fecha_reserva'] != null
           ? DateTime.tryParse(json['fecha_reserva'].toString())
+          : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString())
           : null,
     );
   }
