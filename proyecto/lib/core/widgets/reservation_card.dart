@@ -11,7 +11,8 @@ import 'active_badge.dart';
 ///    muestra categoría, equipo, motivo, fecha de reserva y acciones completas.
 class ReservationCard extends StatefulWidget {
   final Repuesto repuesto;
-  final VoidCallback onLiberar;
+  /// Si es null, la tarjeta es solo lectura (reserva de otro técnico).
+  final VoidCallback? onLiberar;
   final VoidCallback? onMarcarUsado;
   final bool initialExpanded;
 
@@ -216,25 +217,37 @@ class _ReservationCardState extends State<ReservationCard> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Botones de acción en detalle
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: widget.onLiberar,
-                              icon: const Icon(Icons.check_circle_outline, size: 16, color: Colors.black),
-                              label: const Text('Liberar / Usado'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.yellowDefault,
-                                foregroundColor: Colors.black,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(vertical: 10),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      // Botones de acción en detalle (solo si es mi reserva)
+                      if (widget.onLiberar != null)
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: widget.onLiberar,
+                                icon: const Icon(Icons.check_circle_outline, size: 16, color: Colors.black),
+                                label: const Text('Liberar / Usado'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.yellowDefault,
+                                  foregroundColor: Colors.black,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        )
+                      else
+                        Row(
+                          children: [
+                            const Icon(Icons.lock_outline, size: 14, color: Colors.white54),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Solo el propietario puede gestionar esta reserva',
+                              style: GoogleFonts.inter(fontSize: 12, color: Colors.white54),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),
@@ -256,24 +269,40 @@ class _ReservationCardState extends State<ReservationCard> {
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                    TextButton(
-                      onPressed: widget.onLiberar,
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        foregroundColor: AppColors.textPrimary,
-                      ),
-                      child: Text(
-                        'Marcar usado / Liberar',
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.textPrimary,
-                          decoration: TextDecoration.underline,
+                    if (widget.onLiberar != null)
+                      TextButton(
+                        onPressed: widget.onLiberar,
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          foregroundColor: AppColors.textPrimary,
                         ),
+                        child: Text(
+                          'Marcar usado / Liberar',
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      )
+                    else
+                      Row(
+                        children: [
+                          Icon(Icons.lock_outline, size: 13, color: Colors.grey.shade400),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Reserva de otro técnico',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: Colors.grey.shade400,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
                   ],
                 ),
               ],

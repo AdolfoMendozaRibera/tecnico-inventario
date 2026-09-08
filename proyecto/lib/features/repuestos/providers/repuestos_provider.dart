@@ -25,7 +25,7 @@ class RepuestosProvider extends ChangeNotifier {
 
       final response = await _supabase
           .from('repuesto')
-          .select()
+          .select('*, tecnico:reservado_por(nombre)')
           .order('nombre');
 
       final allRepuestos = (response as List).map((e) => Repuesto.fromJson(e)).toList();
@@ -76,6 +76,18 @@ class RepuestosProvider extends ChangeNotifier {
       await fetchRepuestos(); // Refrescar listas
     } catch (e) {
       debugPrint('Error releasing: $e');
+    }
+  }
+
+  Future<void> marcarComoUsado(String repuestoId) async {
+    try {
+      await _supabase.from('repuesto').update({
+        'estado': 'usado',
+      }).eq('id', repuestoId);
+      
+      await fetchRepuestos(); // Refrescar listas
+    } catch (e) {
+      debugPrint('Error marking as used: $e');
     }
   }
 }

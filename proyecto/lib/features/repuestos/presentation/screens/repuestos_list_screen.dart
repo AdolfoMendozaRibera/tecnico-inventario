@@ -161,41 +161,183 @@ class _ListaReservados extends StatelessWidget {
         ),
       );
     }
+
+    final currentUserId = SupabaseService.client.auth.currentUser?.id;
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       itemCount: repuestos.length,
       itemBuilder: (context, index) {
         final repuesto = repuestos[index];
-        return ReservationCard(
-          repuesto: repuesto,
-          onLiberar: () async {
-            final currentUserId = SupabaseService.client.auth.currentUser?.id;
-            
-            if (repuesto.reservadoPor != currentUserId) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Solo el técnico que realizó la reserva puede liberarla.'),
-                  backgroundColor: Colors.redAccent,
-                ),
-              );
-              return;
-            }
+        final esMiReserva = repuesto.reservadoPor == currentUserId;
+        final nombreTecnico = repuesto.reservadoPorNombre;
 
-            final confirm = await showDialog<bool>(
-              context: context,
-              builder: (ctx) => AlertDialog(
-                title: Text('Liberar Repuesto', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
-                content: Text('¿Deseas liberar "${repuesto.nombre}"?'),
-                actions: [
-                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
-                  ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Sí, Liberar')),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Etiqueta: quién reservó esta pieza
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0, left: 4.0),
+              child: Row(
+                children: [
+                  Icon(
+                    esMiReserva ? Icons.person : Icons.person_outline,
+                    size: 14,
+                    color: esMiReserva
+                        ? const Color(0xFFFFD400)
+                        : Colors.grey.shade500,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    esMiReserva
+                        ? 'Tu reserva'
+                        : 'Reservado por: ${nombreTecnico ?? 'Otro técnico'}',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: esMiReserva
+                          ? const Color(0xFFD4A000)
+                          : Colors.grey.shade500,
+                    ),
+                  ),
                 ],
               ),
-            );
-            if (confirm == true && context.mounted) {
-              await context.read<RepuestosProvider>().liberarRepuesto(repuesto.id);
-            }
-          },
+            ),
+            ReservationCard(
+              repuesto: repuesto,
+              // Si no es mi reserva, el callback es null → el botón queda oculto en la card
+              onLiberar: esMiReserva
+                  ? () async {
+                      final accion = await showDialog<String>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16)),
+                          title: Text('Gestionar Repuesto',
+                              style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w700, fontSize: 18)),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '¿Qué acción deseas realizar con "${repuesto.nombre}"?',
+                                style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade800),
+                              ),
+                              if (repuesto.equipoDestino != null &&
+                                  repuesto.equipoDestino!.isNotEmpty) ...[
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    'Asignado a: ${repuesto.equipoDestino}',
+                                    style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey.shade700),
+                                  ),
+                                ),
+                              ],
+                              const SizedBox(height: 18),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  onPressed: () =>
+                                      Navigator.pop(ctx, 'usar'),
+                                  icon: const Icon(Icons.check_circle,
+                                      size: 18, color: Colors.black),
+                                  label: Text('Marcar como Usado',
+                                      style: GoogleFonts.inter(
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.black)),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        const Color(0xFFFFD400),
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8)),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  onPressed: () =>
+                                      Navigator.pop(ctx, 'liberar'),
+                                  icon: const Icon(Icons.undo,
+                                      size: 18, color: Colors.black87),
+                                  label: Text('Liberar al Taller',
+                                      style: GoogleFonts.inter(
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black87)),
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                        color: Colors.grey.shade400),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8)),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, null),
+                              child: Text('Cancelar',
+                                  style: GoogleFonts.inter(
+                                      color: Colors.grey.shade600)),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (accion == null || !context.mounted) return;
+
+                      if (accion == 'usar') {
+                        await context
+                            .read<RepuestosProvider>()
+                            .marcarComoUsado(repuesto.id);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Repuesto marcado como usado (descontado del inventario)'),
+                              backgroundColor: Colors.black87,
+                            ),
+                          );
+                        }
+                      } else if (accion == 'liberar') {
+                        await context
+                            .read<RepuestosProvider>()
+                            .liberarRepuesto(repuesto.id);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Repuesto liberado y devuelto al taller'),
+                              backgroundColor: Colors.black87,
+                            ),
+                          );
+                        }
+                      }
+                    }
+                  : null,
+            ),
+          ],
         );
       },
     );

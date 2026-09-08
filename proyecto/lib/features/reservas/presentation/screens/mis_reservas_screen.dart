@@ -55,35 +55,107 @@ class MisReservasScreen extends StatelessWidget {
                   return ReservationCard(
                     repuesto: repuesto,
                     onLiberar: () async {
-                      final confirm = await showDialog<bool>(
+                      final accion = await showDialog<String>(
                         context: context,
                         builder: (ctx) => AlertDialog(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           title: Text(
-                            'Liberar Repuesto',
-                            style: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                            'Gestionar Repuesto',
+                            style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 18),
                           ),
-                          content: Text(
-                            '¿Deseas marcar como usado o liberar "${repuesto.nombre}" para que vuelva a estar disponible en el taller?',
-                            style: GoogleFonts.inter(),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '¿Qué acción deseas realizar con "${repuesto.nombre}"?',
+                                style: GoogleFonts.inter(fontSize: 14, color: Colors.grey.shade800),
+                              ),
+                              if (repuesto.equipoDestino != null && repuesto.equipoDestino!.isNotEmpty) ...[
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    'Asignado a: ${repuesto.equipoDestino}',
+                                    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey.shade700),
+                                  ),
+                                ),
+                              ],
+                              const SizedBox(height: 18),
+                              // Opción 1: Marcar como Usado (Consumir repuesto)
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton.icon(
+                                  onPressed: () => Navigator.pop(ctx, 'usar'),
+                                  icon: const Icon(Icons.check_circle, size: 18, color: Colors.black),
+                                  label: Text(
+                                    'Marcar como Usado',
+                                    style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: Colors.black),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFFFD400),
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              // Opción 2: Liberar (Devolver al taller)
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  onPressed: () => Navigator.pop(ctx, 'liberar'),
+                                  icon: const Icon(Icons.undo, size: 18, color: Colors.black87),
+                                  label: Text(
+                                    'Liberar al Taller',
+                                    style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: Colors.black87),
+                                  ),
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.grey.shade400),
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () => Navigator.pop(ctx, false),
-                              child: const Text('Cancelar'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(ctx, true),
-                              child: const Text('Sí, Liberar'),
+                              onPressed: () => Navigator.pop(ctx, null),
+                              child: Text(
+                                'Cancelar',
+                                style: GoogleFonts.inter(color: Colors.grey.shade600),
+                              ),
                             ),
                           ],
                         ),
                       );
 
-                      if (confirm == true && context.mounted) {
+                      if (accion == null || !context.mounted) return;
+
+                      if (accion == 'usar') {
+                        await provider.marcarComoUsado(repuesto.id);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Repuesto marcado como usado (descontado del inventario)'),
+                              backgroundColor: Colors.black87,
+                            ),
+                          );
+                        }
+                      } else if (accion == 'liberar') {
                         await provider.liberarRepuesto(repuesto.id);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Repuesto liberado exitosamente')),
+                            const SnackBar(
+                              content: Text('Repuesto liberado y devuelto a disponibles en el taller'),
+                              backgroundColor: Colors.black87,
+                            ),
                           );
                         }
                       }

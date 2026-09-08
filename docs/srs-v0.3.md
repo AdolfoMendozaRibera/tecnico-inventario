@@ -110,7 +110,7 @@ La organización de carpetas del proyecto está documentada por separado en `est
 | RF-04 | El sistema debe permitir reservar un repuesto disponible, indicando el equipo/motivo de destino. | App map v0.1, sección Reserva | Repository ✅ — UI ⏳ |
 | RF-05 | El sistema debe confirmar visualmente el destino asignado al completar una reserva. | App map v0.1, sección Reserva | UI ⏳ |
 | RF-06 | El sistema debe mostrar en "Mis reservas" únicamente las reservas hechas por el técnico logueado, no las de todo el taller. | Definido en pareja (audio de Marco, 18/08) | Repository ✅ — UI ⏳ |
-| RF-07 | El sistema debe permitir liberar un repuesto reservado o marcarlo como usado, devolviéndolo a estado disponible. | App map v0.1, sección Repuestos | Repository ✅ — UI ⏳ |
+| RF-07 | El sistema debe permitir gestionar un repuesto reservado con dos acciones explícitas: liberarlo (devolviéndolo al taller como disponible) o marcarlo como usado (consumiéndolo y descontándolo del inventario activo). | App map v0.1, sección Repuestos / Audio Marco (18/08) | ✅ Implementado |
 | RF-08 | El sistema debe mostrar un resumen con el conteo de repuestos disponibles y reservados al abrir la app. | App map v0.1, sección Inicio | Repository ✅ — UI ⏳ |
 
 **Leyenda:** ✅ Implementado | ⏳ Pendiente | ❌ Bloqueado
@@ -132,7 +132,7 @@ La organización de carpetas del proyecto está documentada por separado en `est
 
 ## 6. Modelo de datos
 
-> **[v0.3]** Modelo implementado en producción. Tablas creadas en Supabase. Ya no es borrador.
+> **[v0.3]** Modelo implementado en producción. Tablas creadas en Supabase con soporte para estado `usado` (Flujo 3).
 
 ```
 Tienda
@@ -150,7 +150,7 @@ Repuesto
 ├─ id            UUID PRIMARY KEY DEFAULT gen_random_uuid()
 ├─ nombre        TEXT NOT NULL
 ├─ categoria     TEXT NOT NULL
-├─ estado        TEXT NOT NULL DEFAULT 'disponible' CHECK (estado IN ('disponible', 'reservado'))
+├─ estado        TEXT NOT NULL DEFAULT 'disponible' CHECK (estado IN ('disponible', 'reservado', 'usado'))
 ├─ tienda_id     UUID NOT NULL → tienda(id) ON DELETE CASCADE
 ├─ equipo_destino TEXT NULL
 ├─ motivo        TEXT NULL

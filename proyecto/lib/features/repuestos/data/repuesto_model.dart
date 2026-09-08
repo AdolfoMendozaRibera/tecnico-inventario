@@ -7,9 +7,12 @@ class Repuesto {
   final String? equipoDestino;
   final String? motivo;
   final String? reservadoPor;
+  /// Nombre legible del técnico que realizó la reserva.
+  /// Viene del JOIN con la tabla `tecnico` en el query del provider.
+  final String? reservadoPorNombre;
   final DateTime? fechaReserva;
 
-  Repuesto({
+  const Repuesto({
     required this.id,
     required this.nombre,
     required this.categoria,
@@ -18,10 +21,15 @@ class Repuesto {
     this.equipoDestino,
     this.motivo,
     this.reservadoPor,
+    this.reservadoPorNombre,
     this.fechaReserva,
   });
 
   factory Repuesto.fromJson(Map<String, dynamic> json) {
+    // El JOIN devuelve el técnico como un mapa anidado: { "tecnico": { "nombre": "..." } }
+    final tecnicoData = json['tecnico'];
+    final nombreTecnico = tecnicoData is Map ? tecnicoData['nombre'] as String? : null;
+
     return Repuesto(
       id: json['id'],
       nombre: json['nombre'],
@@ -31,8 +39,9 @@ class Repuesto {
       equipoDestino: json['equipo_destino'],
       motivo: json['motivo'],
       reservadoPor: json['reservado_por'],
-      fechaReserva: json['fecha_reserva'] != null 
-          ? DateTime.tryParse(json['fecha_reserva'].toString()) 
+      reservadoPorNombre: nombreTecnico,
+      fechaReserva: json['fecha_reserva'] != null
+          ? DateTime.tryParse(json['fecha_reserva'].toString())
           : null,
     );
   }
