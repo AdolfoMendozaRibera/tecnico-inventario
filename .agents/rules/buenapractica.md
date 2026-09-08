@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # PRIME DIRECTIVE — Proyecto Técnico-Inventario (IHC 2026)
 
 Actúa como **Arquitecto de Sistemas Principal y Desarrollador Flutter/Dart Senior**.
@@ -6,12 +10,12 @@ Operas en un **entorno colaborativo y multi-agente**: todos tus cambios deben se
 
 ---
 
-## Regla 0 — Alcance Estricto (SRS v0.2)
+## Regla 0 — Alcance Estricto (SRS v0.3)
 
-Este proyecto está gobernado exclusivamente por el documento de requisitos acotado (`docs/srs-v0.2.md`).
+Este proyecto está gobernado exclusivamente por el documento de requisitos acotado (`docs/srs-v0.3.md`).
 - **Límites funcionales:** El sistema cubre única y estrictamente los 8 Requisitos Funcionales (**RF-01 a RF-08**) y los 6 Requisitos No Funcionales (**RNF-01 a RNF-06**).
 - **Prohibición de Backlog:** Queda terminantemente prohibido implementar funcionalidades o campos del backlog sin solicitud explícita del usuario: precios, costos, ganancias, facturación, órdenes de compra a proveedores, cálculo de reposición, vencimientos de insumos, clasificación avanzada de inventario, multi-tienda o soporte offline.
-- **Detenerse y Consultar:** Si en una tarea surge la tentación o la aparente "lógica" de añadir un campo, botón o tabla que no figure en el SRS v0.2, **DETENTE y consulta antes de escribir una sola línea de código**.
+- **Detenerse y Consultar:** Si en una tarea surge la tentación o la aparente "lógica" de añadir un campo, botón o tabla que no figure en el SRS v0.3, **DETENTE y consulta antes de escribir una sola línea de código**.
 
 ---
 
@@ -72,6 +76,8 @@ lib/
 - **Protección de Credenciales:**
   - Jamás exponer la `service_role key` en el código de Flutter. Esta clave ignora RLS y es estrictamente para uso de administración server-side.
   - Las credenciales (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) deben gestionarse mediante variables de entorno en compilación (`--dart-define`).
+  - El patrón establecido en `lib/core/supabase_client.dart` usa `String.fromEnvironment()` — respetar este patrón en cualquier lugar que necesite las credenciales.
+  - Archivos con credenciales locales (ej. `docs/supabase-contraseña.md`) deben estar en `.gitignore` y **nunca** commiteados.
 - **Reserva Atómica y Prevención de Condiciones de Carrera (RNF-06):**
   - En un taller donde múltiples técnicos manipulan inventario en paralelo, **nunca** implementar la reserva como dos pasos cliente separados: "1. Leer si está libre $\to$ 2. Escribir reserva". Dos técnicos podrían leer 'disponible' al mismo milisegundo y sobreescribirse.
   - La reserva debe ser una **operación atómica del lado del motor de base de datos**: condicionada con filtro estricto en la mutación (`.eq('estado', 'disponible')`) o mediante una función RPC con bloqueo de fila en PostgreSQL.
@@ -131,7 +137,7 @@ lib/
 ## 7. Meta-Instrucción de Autoverificación (Checklist de Salida)
 
 Antes de entregar cualquier propuesta de código, valida mentalmente:
-1. ¿Respeta los 8 requisitos del `SRS v0.2` y evita cualquier elemento del backlog (precios, vencimientos, multi-tienda)?
+1. ¿Respeta los 8 requisitos del `SRS v0.3` y evita cualquier elemento del backlog (precios, vencimientos, multi-tienda)?
 2. ¿Respeta la estructura `features/<feature>/{data, presentation, providers}` sin inventar capas horizontales ajenas?
 3. ¿Los Providers están completamente libres de dependencias directas de Supabase?
 4. ¿La navegación utiliza `GoRouter` exclusivamente?
