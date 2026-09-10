@@ -4,6 +4,7 @@ class Repuesto {
   final String categoria;
   final String estado;
   final String tiendaId;
+  final String? descripcion;
   final String? equipoDestino;
   final String? motivo;
   final String? reservadoPor;
@@ -19,6 +20,7 @@ class Repuesto {
     required this.categoria,
     required this.estado,
     required this.tiendaId,
+    this.descripcion,
     this.equipoDestino,
     this.motivo,
     this.reservadoPor,
@@ -38,6 +40,7 @@ class Repuesto {
       categoria: json['categoria'],
       estado: json['estado'],
       tiendaId: json['tienda_id'],
+      descripcion: json['descripcion'] as String?,
       equipoDestino: json['equipo_destino'],
       motivo: json['motivo'],
       reservadoPor: json['reservado_por'],
@@ -48,6 +51,37 @@ class Repuesto {
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString())
           : null,
+    );
+  }
+
+  /// Copia con campos modificados, útil para actualizaciones locales de estado.
+  Repuesto copyWith({
+    String? id,
+    String? nombre,
+    String? categoria,
+    String? estado,
+    String? tiendaId,
+    String? descripcion,
+    String? equipoDestino,
+    String? motivo,
+    String? reservadoPor,
+    String? reservadoPorNombre,
+    DateTime? fechaReserva,
+    DateTime? createdAt,
+  }) {
+    return Repuesto(
+      id: id ?? this.id,
+      nombre: nombre ?? this.nombre,
+      categoria: categoria ?? this.categoria,
+      estado: estado ?? this.estado,
+      tiendaId: tiendaId ?? this.tiendaId,
+      descripcion: descripcion ?? this.descripcion,
+      equipoDestino: equipoDestino ?? this.equipoDestino,
+      motivo: motivo ?? this.motivo,
+      reservadoPor: reservadoPor ?? this.reservadoPor,
+      reservadoPorNombre: reservadoPorNombre ?? this.reservadoPorNombre,
+      fechaReserva: fechaReserva ?? this.fechaReserva,
+      createdAt: createdAt ?? this.createdAt,
     );
   }
 }

@@ -7,6 +7,7 @@ import '../../../../core/widgets/reservation_card.dart';
 import '../../../../core/widgets/disponible_card.dart';
 import '../../../reservas/presentation/screens/reservar_screen.dart';
 import '../../../../core/supabase_client.dart';
+import 'agregar_repuesto_form_screen.dart';
 
 class RepuestosListScreen extends StatelessWidget {
   const RepuestosListScreen({super.key});
@@ -35,6 +36,22 @@ class RepuestosListScreen extends StatelessWidget {
               Tab(text: 'Disponibles', icon: Icon(Icons.check_circle_outline)),
               Tab(text: 'Reservados', icon: Icon(Icons.lock_outline)),
             ],
+          ),
+        ),
+        // ── FAB — Flujo v0.4: Agregar nuevo repuesto ────────────────────
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => const AgregarRepuestoFormScreen(),
+            ));
+          },
+          backgroundColor: AppColors.yellowDefault,
+          foregroundColor: Colors.black,
+          elevation: 2,
+          icon: const Icon(Icons.add_rounded, size: 22),
+          label: Text(
+            'Agregar repuesto',
+            style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
           ),
         ),
         body: Consumer<RepuestosProvider>(

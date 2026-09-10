@@ -100,4 +100,60 @@ class RepuestosProvider extends ChangeNotifier {
       return false;
     }
   }
+
+  // ── Flujo v0.4 — Agregar repuesto ──────────────────────────────────────────
+
+  /// ID del último repuesto ingresado. Permite destacarlo en el listado.
+  String? _lastAddedId;
+  String? get lastAddedId => _lastAddedId;
+
+  /// Inserta un nuevo repuesto en Supabase con estado 'disponible'.
+  /// Obtiene el tienda_id directamente desde la tabla `tecnico` del usuario actual.
+  /// Retorna `true` si la operación fue exitosa.
+  Future<bool> agregarRepuesto({
+    required String nombre,
+    required String categoria,
+    String? descripcion,
+  }) async {
+    _lastError = null;
+    _lastAddedId = null;
+    try {
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) {
+        _lastError = 'No hay sesión activa.';
+        return false;
+      }
+
+      // Obtenemos el tienda_id del técnico autenticado
+      final tecnicoRow = await _supabase
+          .from('tecnico')
+          .select('tienda_id')
+          .eq('id', userId)
+          .single();
+
+      final tiendaId = tecnicoRow['tienda_id'] as String;
+
+      final response = await _supabase.from('repuesto').insert({
+        'nombre': nombre.trim(),
+        'categoria': categoria.trim(),
+        'descripcion': descripcion?.trim(),
+        'estado': 'disponible',
+        'tienda_id': tiendaId,
+      }).select('id').single();
+
+      _lastAddedId = response['id'] as String?;
+      await fetchRepuestos(); // Refrescar listas para reflejar el nuevo ítem
+      return true;
+    } catch (e) {
+      _lastError = e.toString();
+      debugPrint('Error adding repuesto: $e');
+      return false;
+    }
+  }
+
+  /// Limpia el ID del último repuesto agregado (evita resaltado persistente).
+  void clearLastAddedId() {
+    _lastAddedId = null;
+    notifyListeners();
+  }
 }
