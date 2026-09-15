@@ -2,40 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../features/repuestos/data/repuesto_model.dart';
 import '../theme/app_colors.dart';
-import 'active_badge.dart';
 
-/// Componente Figma: `Card`
-/// Posee dos estados interactivos:
-/// 1. `Default` (Colapsado): Fondo blanco, borde #E0E0E0, información principal.
-/// 2. `Detalle` (Expandido al dar click): Fondo #696565, texto en contraste blanco,
-///    muestra categoría, equipo, motivo, fecha de reserva y acciones completas.
-class ReservationCard extends StatefulWidget {
+/// Tarjeta de repuesto reservado adaptada fielmente al diseño de Figma (SVG).
+/// Presenta fondo blanco, bordes Slate-200, badge ámbar "Reservado",
+/// detalles de equipo destino, motivo, técnico y botones operativos directos.
+class ReservationCard extends StatelessWidget {
   final Repuesto repuesto;
-  /// Si es null, la tarjeta es solo lectura (reserva de otro técnico).
   final VoidCallback? onLiberar;
   final VoidCallback? onMarcarUsado;
-  final bool initialExpanded;
+  final bool isMiReserva;
+  final bool useRedLiberarButton;
 
   const ReservationCard({
     super.key,
     required this.repuesto,
-    required this.onLiberar,
+    this.onLiberar,
     this.onMarcarUsado,
-    this.initialExpanded = false,
+    this.isMiReserva = false,
+    this.useRedLiberarButton = true,
   });
-
-  @override
-  State<ReservationCard> createState() => _ReservationCardState();
-}
-
-class _ReservationCardState extends State<ReservationCard> {
-  late bool _isExpanded;
-
-  @override
-  void initState() {
-    super.initState();
-    _isExpanded = widget.initialExpanded;
-  }
 
   String _formatearFecha(DateTime? fecha) {
     if (fecha == null) return 'No registrada';
@@ -44,271 +29,336 @@ class _ReservationCardState extends State<ReservationCard> {
     final anio = fecha.year;
     final hora = fecha.hour.toString().padLeft(2, '0');
     final min = fecha.minute.toString().padLeft(2, '0');
-    return '$dia/$mes/$anio a las $hora:$min';
+    return '$dia/$mes/$anio - $hora:$min';
   }
 
   @override
   Widget build(BuildContext context) {
-    final repuesto = widget.repuesto;
+    final tieneAcciones = onLiberar != null || onMarcarUsado != null;
 
-    // Colores según el estado (Default vs Detalle de Figma)
-    final cardBg = _isExpanded ? AppColors.cardDetailBg : AppColors.cardBg;
-    final textColor = _isExpanded ? AppColors.cardDetailText : AppColors.textPrimary;
-    final subtextColor = _isExpanded ? Colors.white.withValues(alpha: 0.85) : AppColors.textSecondary;
-    final borderColor = _isExpanded ? AppColors.cardDetailBg : AppColors.cardBorder;
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _isExpanded = !_isExpanded;
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeInOut,
-          margin: const EdgeInsets.only(bottom: 14.0),
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: borderColor, width: 1),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: _isExpanded ? 0.12 : 0.04),
-                blurRadius: _isExpanded ? 10 : 4,
-                offset: const Offset(0, 3),
-              ),
-            ],
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14.0),
+      padding: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
-          child: Column(
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Fila superior: Ícono de caja/inventario + Nombre y categoría + Badge "Reservado"
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
             children: [
-              // Fila superior: Nombre del repuesto + Badge "Activa"
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
+              // Círculo decorativo slate-100
+              Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: AppColors.slate100,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.inventory_2_outlined,
+                  size: 20,
+                  color: AppColors.slate500,
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              // Nombre del repuesto y badge de categoría
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
                       repuesto.nombre,
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: textColor,
+                        color: AppColors.slate900,
                         letterSpacing: -0.3,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  ActiveBadge(
-                    label: repuesto.estado == 'reservado' ? 'Activa' : 'Disponible',
-                    onTap: () {
-                      setState(() => _isExpanded = !_isExpanded);
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-
-              // Información común: Destino
-              Row(
-                children: [
-                  Icon(
-                    Icons.devices_other,
-                    size: 16,
-                    color: _isExpanded ? AppColors.yellowDefault : Colors.grey.shade600,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Destino: ${repuesto.equipoDestino ?? "No especificado"}',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: subtextColor,
-                        fontWeight: FontWeight.w500,
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.slate100,
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-
-              // Motivo (siempre que exista)
-              if (repuesto.motivo != null && repuesto.motivo!.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.chat_bubble_outline,
-                      size: 16,
-                      color: _isExpanded ? AppColors.yellowDefault : Colors.grey.shade600,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
                       child: Text(
-                        'Motivo: ${repuesto.motivo}',
+                        repuesto.categoria.toUpperCase(),
                         style: GoogleFonts.inter(
-                          fontSize: 13,
-                          color: subtextColor,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.slate500,
+                          letterSpacing: 0.5,
                         ),
-                        maxLines: _isExpanded ? 4 : 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
-              ],
+              ),
+              const SizedBox(width: 8),
 
-              // SECCIÓN DETALLE EXPANDIDA (Figma Variant Default=detalle)
-              AnimatedCrossFade(
-                firstChild: const SizedBox.shrink(),
-                secondChild: Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Divider(color: Colors.white24, height: 20),
-
-                      // Categoría
-                      Row(
-                        children: [
-                          const Icon(Icons.category_outlined, size: 16, color: AppColors.yellowDefault),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Categoría: ',
-                            style: GoogleFonts.inter(fontSize: 13, color: Colors.white70),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              repuesto.categoria,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Fecha y hora de reserva
-                      Row(
-                        children: [
-                          const Icon(Icons.schedule, size: 16, color: AppColors.yellowDefault),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Reservado: ${_formatearFecha(repuesto.fechaReserva)}',
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                color: Colors.white.withValues(alpha: 0.9),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Botones de acción en detalle (solo si es mi reserva)
-                      if (widget.onLiberar != null)
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: widget.onLiberar,
-                                icon: const Icon(Icons.check_circle_outline, size: 16, color: Colors.black),
-                                label: const Text('Liberar / Usado'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.yellowDefault,
-                                  foregroundColor: Colors.black,
-                                  elevation: 0,
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      else
-                        Row(
-                          children: [
-                            const Icon(Icons.lock_outline, size: 14, color: Colors.white54),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Solo el propietario puede gestionar esta reserva',
-                              style: GoogleFonts.inter(fontSize: 12, color: Colors.white54),
-                            ),
-                          ],
-                        ),
-                    ],
+              // Badge Figma: "Reservado" (#FEF3C7 fondo, #B45309 texto)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEF3C7),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Reservado',
+                  style: GoogleFonts.inter(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFFB45309),
                   ),
                 ),
-                crossFadeState: _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-                duration: const Duration(milliseconds: 200),
               ),
-
-              // Pie en modo colapsado (Texto según Figma "Marcar usado / Liberar")
-              if (!_isExpanded) ...[
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Toca para ver detalle',
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        color: Colors.grey.shade500,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    if (widget.onLiberar != null)
-                      TextButton(
-                        onPressed: widget.onLiberar,
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          foregroundColor: AppColors.textPrimary,
-                        ),
-                        child: Text(
-                          'Marcar usado / Liberar',
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                      )
-                    else
-                      Row(
-                        children: [
-                          Icon(Icons.lock_outline, size: 13, color: Colors.grey.shade400),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Reserva de otro técnico',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              color: Colors.grey.shade400,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-              ],
             ],
           ),
-        ),
+
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12.0),
+            child: Divider(color: Color(0xFFF1F5F9), height: 1),
+          ),
+
+          // Datos de la reserva: Destino
+          Row(
+            children: [
+              const Icon(Icons.laptop_chromebook_rounded, size: 16, color: AppColors.slate500),
+              const SizedBox(width: 8),
+              Text(
+                'Destino: ',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.slate500,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  repuesto.equipoDestino ?? 'No especificado',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.slate900,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+
+          // Motivo (si existe)
+          if (repuesto.motivo != null && repuesto.motivo!.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.description_outlined, size: 16, color: AppColors.slate500),
+                const SizedBox(width: 8),
+                Text(
+                  'Motivo: ',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.slate500,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    repuesto.motivo!,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF475569),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ],
+
+          // Responsable / Técnico
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(
+                isMiReserva ? Icons.person_rounded : Icons.person_outline_rounded,
+                size: 16,
+                color: isMiReserva ? const Color(0xFFB45309) : AppColors.slate500,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Reservado por: ',
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.slate500,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  isMiReserva
+                      ? 'Tu reserva'
+                      : (repuesto.reservadoPorNombre ?? 'Técnico del taller'),
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: isMiReserva ? FontWeight.w700 : FontWeight.w500,
+                    color: isMiReserva ? const Color(0xFFB45309) : AppColors.slate900,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+
+          // Fecha de reserva
+          if (repuesto.fechaReserva != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.access_time_rounded, size: 16, color: AppColors.slate500),
+                const SizedBox(width: 8),
+                Text(
+                  'Fecha: ',
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.slate500,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    _formatearFecha(repuesto.fechaReserva),
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: const Color(0xFF475569),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+
+          // Botones de acción operativos (Figma: Botón Dark "Marcar como Usado" + Botón "Liberar al Taller")
+          if (tieneAcciones) ...[
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                // Botón Primario: Marcar como Usado (Figma #1E293B)
+                if (onMarcarUsado != null)
+                  Expanded(
+                    flex: 6,
+                    child: ElevatedButton.icon(
+                      onPressed: onMarcarUsado,
+                      icon: const Icon(Icons.check_circle_rounded, size: 16, color: Colors.white),
+                      label: Text(
+                        'Marcar como Usado',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.slate800,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                if (onLiberar != null && onMarcarUsado != null)
+                  const SizedBox(width: 10),
+                // Botón Secundario: Liberar al Taller (Figma: Tonal Red #FEF2F2 con borde #FCA5A5)
+                if (onLiberar != null)
+                  Expanded(
+                    flex: 5,
+                    child: OutlinedButton.icon(
+                      onPressed: onLiberar,
+                      icon: Icon(
+                        Icons.undo_rounded,
+                        size: 16,
+                        color: useRedLiberarButton
+                            ? const Color(0xFFDC2626)
+                            : AppColors.slate800,
+                      ),
+                      label: Text(
+                        'Liberar al Taller',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: useRedLiberarButton
+                              ? const Color(0xFFDC2626)
+                              : AppColors.slate800,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: useRedLiberarButton
+                            ? const Color(0xFFFEF2F2)
+                            : Colors.white,
+                        side: BorderSide(
+                          color: useRedLiberarButton
+                              ? const Color(0xFFFCA5A5)
+                              : AppColors.slate200,
+                          width: 1.5,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ] else ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.slate50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.slate200),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.lock_outline_rounded, size: 14, color: Color(0xFF94A3B8)),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Reserva protegida de otro técnico',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: const Color(0xFF94A3B8),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

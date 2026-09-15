@@ -14,307 +14,485 @@ class RepuestosListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Inventario del Taller',
-            style: GoogleFonts.inter(
-              fontWeight: FontWeight.w600,
-              fontSize: 20,
-              letterSpacing: -0.4,
+    return Consumer<RepuestosProvider>(
+      builder: (context, provider, child) {
+        final int disponiblesCount = provider.disponibles.length;
+        final int reservadosCount = provider.reservados.length;
+
+        return DefaultTabController(
+          length: 2,
+          child: Scaffold(
+            backgroundColor: AppColors.slate50,
+            appBar: AppBar(
+              backgroundColor: AppColors.slate50,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              title: Text(
+                'Inventario del Taller',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 20,
+                  color: AppColors.slate900,
+                  letterSpacing: -0.4,
+                ),
+              ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(48),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: AppColors.slate200,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                  child: TabBar(
+                    indicatorColor: AppColors.slate800,
+                    indicatorWeight: 3,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    dividerColor: Colors.transparent,
+                    labelColor: AppColors.slate900,
+                    unselectedLabelColor: AppColors.slate500,
+                    labelStyle: GoogleFonts.inter(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                    unselectedLabelStyle: GoogleFonts.inter(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                    ),
+                    tabs: [
+                      Tab(text: 'Disponibles ($disponiblesCount)'),
+                      Tab(text: 'Reservados ($reservadosCount)'),
+                    ],
+                  ),
+                ),
+              ),
             ),
+            floatingActionButton: FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => const AgregarRepuestoFormScreen(),
+                ));
+              },
+              backgroundColor: AppColors.slate800,
+              foregroundColor: Colors.white,
+              elevation: 3,
+              icon: const Icon(Icons.add_rounded, size: 22),
+              label: Text(
+                'Agregar repuesto',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            body: provider.isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.slate800,
+                    ),
+                  )
+                : TabBarView(
+                    children: [
+                      _ListaDisponibles(provider.disponibles),
+                      _ListaReservados(provider.reservados),
+                    ],
+                  ),
           ),
-          bottom: TabBar(
-            indicatorColor: AppColors.yellowHighlight,
-            indicatorWeight: 3,
-            labelColor: Colors.black,
-            unselectedLabelColor: Colors.grey.shade600,
-            labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14),
-            tabs: const [
-              Tab(text: 'Disponibles', icon: Icon(Icons.check_circle_outline)),
-              Tab(text: 'Reservados', icon: Icon(Icons.lock_outline)),
-            ],
-          ),
-        ),
-        // ── FAB — Flujo v0.4: Agregar nuevo repuesto ────────────────────
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => const AgregarRepuestoFormScreen(),
-            ));
-          },
-          backgroundColor: AppColors.yellowDefault,
-          foregroundColor: Colors.black,
-          elevation: 2,
-          icon: const Icon(Icons.add_rounded, size: 22),
-          label: Text(
-            'Agregar repuesto',
-            style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 14),
-          ),
-        ),
-        body: Consumer<RepuestosProvider>(
-          builder: (context, provider, child) {
-            if (provider.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return TabBarView(
-              children: [
-                _ListaDisponibles([...provider.disponibles, ...provider.reservados]),
-                _ListaReservados(provider.reservados),
-              ],
-            );
-          }
-        ),
-      ),
+        );
+      },
     );
   }
 }
 
-class _ListaDisponibles extends StatelessWidget {
+class _ListaDisponibles extends StatefulWidget {
   final List repuestos;
   const _ListaDisponibles(this.repuestos);
 
   @override
+  State<_ListaDisponibles> createState() => _ListaDisponiblesState();
+}
+
+class _ListaDisponiblesState extends State<_ListaDisponibles> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (repuestos.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey.shade400),
-            const SizedBox(height: 16),
-            Text(
-              'No hay repuestos disponibles',
-              style: GoogleFonts.inter(fontSize: 16, color: Colors.grey.shade600),
+    final filtered = widget.repuestos.where((r) {
+      if (_searchQuery.isEmpty) return true;
+      final query = _searchQuery.toLowerCase();
+      final nombre = (r.nombre ?? '').toLowerCase();
+      final categoria = (r.categoria ?? '').toLowerCase();
+      return nombre.contains(query) || categoria.contains(query);
+    }).toList();
+
+    return Column(
+      children: [
+        // Barra de búsqueda según Figma
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+          child: TextField(
+            controller: _searchController,
+            onChanged: (val) {
+              setState(() {
+                _searchQuery = val.trim();
+              });
+            },
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              color: AppColors.slate900,
             ),
-          ],
-        ),
-      );
-    }
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: repuestos.length,
-      itemBuilder: (context, index) {
-        final repuesto = repuestos[index];
-        return DisponibleCard(
-          repuesto: repuesto,
-          onReservar: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => ReservarScreen(
-                repuestoId: repuesto.id,
-                repuestoNombre: repuesto.nombre,
+            decoration: InputDecoration(
+              hintText: 'Buscar por nombre o categoría...',
+              hintStyle: GoogleFonts.inter(
+                color: const Color(0xFF94A3B8),
+                fontSize: 14,
               ),
-            ));
-          },
-        );
-      },
+              prefixIcon: const Icon(
+                Icons.search_rounded,
+                color: Color(0xFF94A3B8),
+                size: 20,
+              ),
+              suffixIcon: _searchQuery.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear_rounded, size: 18, color: AppColors.slate500),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() => _searchQuery = '');
+                      },
+                    )
+                  : null,
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: AppColors.slate200,
+                  width: 1.5,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: AppColors.slate800,
+                  width: 1.5,
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Lista de Repuestos Disponibles
+        Expanded(
+          child: filtered.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.inventory_2_outlined,
+                        size: 56,
+                        color: Color(0xFF94A3B8),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _searchQuery.isNotEmpty
+                            ? 'No se encontraron repuestos con "$_searchQuery"'
+                            : 'No hay repuestos disponibles en el taller',
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          color: AppColors.slate500,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 80),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, index) {
+                    final repuesto = filtered[index];
+                    return DisponibleCard(
+                      repuesto: repuesto,
+                      onReservar: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => ReservarScreen(
+                            repuestoId: repuesto.id,
+                            repuestoNombre: repuesto.nombre,
+                          ),
+                        ));
+                      },
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 }
 
-class _ListaReservados extends StatelessWidget {
+class _ListaReservados extends StatefulWidget {
   final List repuestos;
   const _ListaReservados(this.repuestos);
 
   @override
-  Widget build(BuildContext context) {
-    if (repuestos.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.lock_open, size: 64, color: Colors.grey.shade400),
-            const SizedBox(height: 16),
-            Text(
-              'No hay repuestos reservados en el taller',
-              style: GoogleFonts.inter(fontSize: 16, color: Colors.grey.shade600),
-            ),
-          ],
-        ),
-      );
-    }
+  State<_ListaReservados> createState() => _ListaReservadosState();
+}
 
+class _ListaReservadosState extends State<_ListaReservados> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final currentUserId = SupabaseService.client.auth.currentUser?.id;
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      itemCount: repuestos.length,
-      itemBuilder: (context, index) {
-        final repuesto = repuestos[index];
-        final esMiReserva = repuesto.reservadoPor == currentUserId;
-        final nombreTecnico = repuesto.reservadoPorNombre;
+    final filtered = widget.repuestos.where((r) {
+      if (_searchQuery.isEmpty) return true;
+      final query = _searchQuery.toLowerCase();
+      final nombre = (r.nombre ?? '').toLowerCase();
+      final categoria = (r.categoria ?? '').toLowerCase();
+      final equipo = (r.equipoDestino ?? '').toLowerCase();
+      final tecnico = (r.reservadoPorNombre ?? '').toLowerCase();
+      return nombre.contains(query) ||
+          categoria.contains(query) ||
+          equipo.contains(query) ||
+          tecnico.contains(query);
+    }).toList();
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Etiqueta: quién reservó esta pieza
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4.0, left: 4.0),
-              child: Row(
-                children: [
-                  Icon(
-                    esMiReserva ? Icons.person : Icons.person_outline,
-                    size: 14,
-                    color: esMiReserva
-                        ? const Color(0xFFFFD400)
-                        : Colors.grey.shade500,
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    esMiReserva
-                        ? 'Tu reserva'
-                        : 'Reservado por: ${nombreTecnico ?? 'Otro técnico'}',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: esMiReserva
-                          ? const Color(0xFFD4A000)
-                          : Colors.grey.shade500,
-                    ),
-                  ),
-                ],
+    return Column(
+      children: [
+        // Barra de búsqueda según Figma
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+          child: TextField(
+            controller: _searchController,
+            onChanged: (val) {
+              setState(() {
+                _searchQuery = val.trim();
+              });
+            },
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              color: AppColors.slate900,
+            ),
+            decoration: InputDecoration(
+              hintText: 'Buscar por nombre, equipo o técnico...',
+              hintStyle: GoogleFonts.inter(
+                color: const Color(0xFF94A3B8),
+                fontSize: 14,
+              ),
+              prefixIcon: const Icon(
+                Icons.search_rounded,
+                color: Color(0xFF94A3B8),
+                size: 20,
+              ),
+              suffixIcon: _searchQuery.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear_rounded, size: 18, color: AppColors.slate500),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() => _searchQuery = '');
+                      },
+                    )
+                  : null,
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: AppColors.slate200,
+                  width: 1.5,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: AppColors.slate800,
+                  width: 1.5,
+                ),
               ),
             ),
-            ReservationCard(
-              repuesto: repuesto,
-              // Si no es mi reserva, el callback es null → el botón queda oculto en la card
-              onLiberar: esMiReserva
-                  ? () async {
-                      final accion = await showDialog<String>(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16)),
-                          title: Text('Gestionar Repuesto',
-                              style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w700, fontSize: 18)),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '¿Qué acción deseas realizar con "${repuesto.nombre}"?',
-                                style: GoogleFonts.inter(
-                                    fontSize: 14,
-                                    color: Colors.grey.shade800),
-                              ),
-                              if (repuesto.equipoDestino != null &&
-                                  repuesto.equipoDestino!.isNotEmpty) ...[
-                                const SizedBox(height: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    'Asignado a: ${repuesto.equipoDestino}',
-                                    style: GoogleFonts.inter(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.grey.shade700),
-                                  ),
-                                ),
-                              ],
-                              const SizedBox(height: 18),
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton.icon(
-                                  onPressed: () =>
-                                      Navigator.pop(ctx, 'usar'),
-                                  icon: const Icon(Icons.check_circle,
-                                      size: 18, color: Colors.black),
-                                  label: Text('Marcar como Usado',
-                                      style: GoogleFonts.inter(
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.black)),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                        const Color(0xFFFFD400),
-                                    elevation: 0,
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8)),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              SizedBox(
-                                width: double.infinity,
-                                child: OutlinedButton.icon(
-                                  onPressed: () =>
-                                      Navigator.pop(ctx, 'liberar'),
-                                  icon: const Icon(Icons.undo,
-                                      size: 18, color: Colors.black87),
-                                  label: Text('Liberar al Taller',
-                                      style: GoogleFonts.inter(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black87)),
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(
-                                        color: Colors.grey.shade400),
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 12),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8)),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(ctx, null),
-                              child: Text('Cancelar',
-                                  style: GoogleFonts.inter(
-                                      color: Colors.grey.shade600)),
-                            ),
-                          ],
+          ),
+        ),
+
+        // Lista de Repuestos Reservados
+        Expanded(
+          child: filtered.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.lock_open_rounded,
+                        size: 56,
+                        color: Color(0xFF94A3B8),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _searchQuery.isNotEmpty
+                            ? 'No se encontraron reservas con "$_searchQuery"'
+                            : 'No hay repuestos reservados en el taller',
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          color: AppColors.slate500,
+                          fontWeight: FontWeight.w500,
                         ),
-                      );
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 80),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, index) {
+                    final repuesto = filtered[index];
+                    final esMiReserva = repuesto.reservadoPor == currentUserId;
 
-                      if (accion == null || !context.mounted) return;
+                    return ReservationCard(
+                      repuesto: repuesto,
+                      isMiReserva: esMiReserva,
+                      onMarcarUsado: esMiReserva
+                          ? () async {
+                              final confirmar = await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  title: Text(
+                                    'Marcar como Usado',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 18,
+                                      color: AppColors.slate900,
+                                    ),
+                                  ),
+                                  content: Text(
+                                    '¿Confirmas que se utilizó "${repuesto.nombre}" para el equipo "${repuesto.equipoDestino ?? 'asignado'}"?\n\nEsta pieza se descontará permanentemente del inventario.',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 14,
+                                      color: const Color(0xFF475569),
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(ctx, false),
+                                      child: Text(
+                                        'Cancelar',
+                                        style: GoogleFonts.inter(color: AppColors.slate500),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => Navigator.pop(ctx, true),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.slate800,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: const Text('Confirmar Uso'),
+                                    ),
+                                  ],
+                                ),
+                              );
 
-                      if (accion == 'usar') {
-                        final provider = context.read<RepuestosProvider>();
-                        final exito = await provider.marcarComoUsado(repuesto.id);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(exito
-                                  ? 'Repuesto marcado como usado (descontado del inventario)'
-                                  : 'Error al marcar como usado: ${provider.lastError ?? "Rechazado por Supabase"}'),
-                              backgroundColor: exito ? Colors.black87 : Theme.of(context).colorScheme.error,
-                            ),
-                          );
-                        }
-                      } else if (accion == 'liberar') {
-                        final exito = await context
-                            .read<RepuestosProvider>()
-                            .liberarRepuesto(repuesto.id);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(exito
-                                  ? 'Repuesto liberado y devuelto al taller'
-                                  : 'Error al liberar el repuesto.'),
-                              backgroundColor: exito ? Colors.black87 : Theme.of(context).colorScheme.error,
-                            ),
-                          );
-                        }
-                      }
-                    }
-                  : null,
-            ),
-          ],
-        );
-      },
+                              if (confirmar != true || !context.mounted) return;
+
+                              final provider = context.read<RepuestosProvider>();
+                              final exito = await provider.marcarComoUsado(repuesto.id);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(exito
+                                        ? 'Repuesto marcado como usado con éxito'
+                                        : 'Error al marcar como usado: ${provider.lastError ?? "Rechazado"}'),
+                                    backgroundColor: exito ? AppColors.slate800 : Theme.of(context).colorScheme.error,
+                                  ),
+                                );
+                              }
+                            }
+                          : null,
+                      onLiberar: esMiReserva
+                          ? () async {
+                              final confirmar = await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  title: Text(
+                                    'Liberar al Taller',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 18,
+                                      color: AppColors.slate900,
+                                    ),
+                                  ),
+                                  content: Text(
+                                    '¿Deseas devolver "${repuesto.nombre}" al inventario disponible para cualquier técnico?',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 14,
+                                      color: const Color(0xFF475569),
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(ctx, false),
+                                      child: Text(
+                                        'Cancelar',
+                                        style: GoogleFonts.inter(color: AppColors.slate500),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => Navigator.pop(ctx, true),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.slate800,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: const Text('Liberar Repuesto'),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirmar != true || !context.mounted) return;
+
+                              final provider = context.read<RepuestosProvider>();
+                              final exito = await provider.liberarRepuesto(repuesto.id);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(exito
+                                        ? 'Repuesto liberado y devuelto a disponibles'
+                                        : 'Error al liberar el repuesto.'),
+                                    backgroundColor: exito ? AppColors.slate800 : Theme.of(context).colorScheme.error,
+                                  ),
+                                );
+                              }
+                            }
+                          : null,
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 }

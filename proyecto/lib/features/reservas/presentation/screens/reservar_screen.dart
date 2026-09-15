@@ -33,89 +33,266 @@ class _ReservarScreenState extends State<ReservarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.slate50,
       appBar: AppBar(
+        backgroundColor: AppColors.slate50,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: AppColors.slate900),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         title: Text(
           'Reservar Repuesto',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 20),
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+            color: AppColors.slate900,
+            letterSpacing: -0.4,
+          ),
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Tarjeta Resumen del Repuesto Seleccionado (Figma Style)
               Container(
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: AppColors.yellowDefault.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.yellowDefault.withValues(alpha: 0.4)),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.slate200, width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Repuesto seleccionado:',
-                      style: GoogleFonts.inter(fontSize: 13, color: Colors.grey.shade700),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      widget.repuestoNombre,
-                      style: GoogleFonts.inter(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: const BoxDecoration(
+                            color: AppColors.slate100,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.inventory_2_outlined,
+                            size: 22,
+                            color: AppColors.slate500,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'REPUESTO SELECCIONADO',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.slate500,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.repuestoNombre,
+                                style: GoogleFonts.inter(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.slate900,
+                                  letterSpacing: -0.3,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Badge "Disponible"
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFDCFCE7),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            'Disponible',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF15803D),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
+
+              const SizedBox(height: 24),
+
+              // Campo: Equipo Destino
+              Text(
+                'Equipo Destino *',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.slate900,
+                ),
+              ),
+              const SizedBox(height: 8),
               TextField(
                 controller: _equipoController,
-                style: GoogleFonts.inter(),
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: AppColors.slate900,
+                ),
                 decoration: InputDecoration(
-                  labelText: 'Equipo Destino (Requerido)',
-                  labelStyle: GoogleFonts.inter(),
-                  hintText: 'Ej. Dell Inspiron 15 de Juan',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  prefixIcon: const Icon(Icons.devices),
+                  hintText: 'Ej. Dell Latitude 5420 - N° 102',
+                  hintStyle: GoogleFonts.inter(
+                    color: const Color(0xFF94A3B8),
+                    fontSize: 14,
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.devices_rounded,
+                    color: Color(0xFF64748B),
+                    size: 20,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: AppColors.slate200,
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: AppColors.slate800,
+                      width: 1.5,
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
+
+              const SizedBox(height: 20),
+
+              // Campo: Motivo de la reserva
+              Text(
+                'Motivo de la reserva (Opcional)',
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.slate900,
+                ),
+              ),
+              const SizedBox(height: 8),
               TextField(
                 controller: _motivoController,
-                style: GoogleFonts.inter(),
-                decoration: InputDecoration(
-                  labelText: 'Motivo de la reserva (Opcional)',
-                  labelStyle: GoogleFonts.inter(),
-                  hintText: 'Ej. Cambio de pantalla rota',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  prefixIcon: const Icon(Icons.notes),
-                ),
                 maxLines: 3,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: AppColors.slate900,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Ej. Mantenimiento programado o cambio de pantalla rota',
+                  hintStyle: GoogleFonts.inter(
+                    color: const Color(0xFF94A3B8),
+                    fontSize: 14,
+                  ),
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.only(bottom: 36.0),
+                    child: Icon(
+                      Icons.description_outlined,
+                      color: Color(0xFF64748B),
+                      size: 20,
+                    ),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: AppColors.slate200,
+                      width: 1.5,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: AppColors.slate800,
+                      width: 1.5,
+                    ),
+                  ),
+                ),
               ),
-              const Spacer(),
+
+              const SizedBox(height: 32),
+
+              // Botón Primario Figma: Confirmar Reserva (#1E293B)
               ElevatedButton(
                 onPressed: _isSubmitting ? null : _confirmarReserva,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.yellowDefault,
-                  foregroundColor: Colors.black,
+                  backgroundColor: AppColors.slate800,
+                  foregroundColor: Colors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: _isSubmitting
                     ? const SizedBox(
                         height: 20,
                         width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
                       )
                     : Text(
                         'Confirmar Reserva',
-                        style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Botón Secundario: Cancelar
+              TextButton(
+                onPressed: _isSubmitting ? null : () => Navigator.of(context).pop(),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  foregroundColor: AppColors.slate500,
+                ),
+                child: Text(
+                  'Cancelar',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.slate500,
+                  ),
+                ),
               ),
             ],
           ),
@@ -128,7 +305,13 @@ class _ReservarScreenState extends State<ReservarScreen> {
     final equipo = _equipoController.text.trim();
     if (equipo.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('El equipo destino es requerido')),
+        SnackBar(
+          content: Text(
+            'El equipo destino es requerido',
+            style: GoogleFonts.inter(),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
       );
       return;
     }
@@ -144,13 +327,25 @@ class _ReservarScreenState extends State<ReservarScreen> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('¡Reserva confirmada con éxito!')),
+          SnackBar(
+            content: Text(
+              '¡Reserva confirmada con éxito!',
+              style: GoogleFonts.inter(color: Colors.white),
+            ),
+            backgroundColor: AppColors.slate800,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al reservar: $e')),
+          SnackBar(
+            content: Text(
+              'Error al reservar: $e',
+              style: GoogleFonts.inter(),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     } finally {

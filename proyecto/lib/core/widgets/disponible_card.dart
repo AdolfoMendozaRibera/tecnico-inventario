@@ -2,14 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../features/repuestos/data/repuesto_model.dart';
 import '../theme/app_colors.dart';
-import 'active_badge.dart';
 
-/// Componente para repuestos en estado `disponible`.
-/// Diseñado con la misma jerarquía estética que la tarjeta de reservas de Figma:
-/// 1. `Default` (Colapsado): Fondo blanco, información clave, badge "Disponible", botón rápido de reservar.
-/// 2. `Detalle` (Expandido al dar click): Fondo #696565, texto en contraste blanco,
-///    muestra categoría con chip, estado detallado, fecha de registro en inventario,
-///    ubicación en el taller y botón de acción prominente "Reservar este Repuesto".
 class DisponibleCard extends StatefulWidget {
   final Repuesto repuesto;
   final VoidCallback onReservar;
@@ -35,56 +28,33 @@ class _DisponibleCardState extends State<DisponibleCard> {
     _isExpanded = widget.initialExpanded;
   }
 
-  String _formatearFecha(DateTime? fecha) {
-    if (fecha == null) return 'Fecha no registrada';
-    final dia = fecha.day.toString().padLeft(2, '0');
-    final mes = fecha.month.toString().padLeft(2, '0');
-    final anio = fecha.year;
-    final hora = fecha.hour.toString().padLeft(2, '0');
-    final min = fecha.minute.toString().padLeft(2, '0');
-    return '$dia/$mes/$anio a las $hora:$min';
-  }
-
   @override
   Widget build(BuildContext context) {
     final repuesto = widget.repuesto;
 
-    // Colores según estado interactivo (consistente con ReservationCard)
-    final cardBg = _isExpanded ? AppColors.cardDetailBg : AppColors.cardBg;
-    final textColor = _isExpanded ? AppColors.cardDetailText : AppColors.textPrimary;
-    final subtextColor = _isExpanded ? Colors.white.withValues(alpha: 0.85) : AppColors.textSecondary;
-    final borderColor = _isExpanded ? AppColors.cardDetailBg : AppColors.cardBorder;
-
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.slate200,
+          width: 1.5,
+        ),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
         onTap: () {
           setState(() {
             _isExpanded = !_isExpanded;
           });
         },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeInOut,
-          margin: const EdgeInsets.only(bottom: 14.0),
+        child: Padding(
           padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: borderColor, width: 1),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: _isExpanded ? 0.12 : 0.04),
-                blurRadius: _isExpanded ? 10 : 4,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
             children: [
-              // Fila superior: Nombre del repuesto + Badge "Disponible"
+              // Fila Superior: Nombre del repuesto + Badge "Disponible"
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -94,189 +64,135 @@ class _DisponibleCardState extends State<DisponibleCard> {
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: textColor,
+                        color: AppColors.slate900,
                         letterSpacing: -0.3,
                       ),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  ActiveBadge(
-                    label: 'Disponible',
-                    onTap: () {
-                      setState(() => _isExpanded = !_isExpanded);
-                    },
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.emeraldBg,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'Disponible',
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.emeraldValue,
+                      ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
 
-              // Información común colapsada: Categoría y estado rápido
+              // Categoría
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.category_outlined,
                     size: 16,
-                    color: _isExpanded ? AppColors.yellowDefault : Colors.grey.shade600,
+                    color: AppColors.slate500,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Categoría: ${repuesto.categoria}',
                       style: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: subtextColor,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 13,
+                        color: AppColors.slate500,
+                        fontWeight: FontWeight.w400,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  if (!_isExpanded) ...[
-                    // Botón rápido en estado colapsado (cumple RNF-01: mínimo de toques)
-                    ElevatedButton(
-                      onPressed: widget.onReservar,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.yellowDefault,
-                        foregroundColor: Colors.black,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      ),
-                      child: Text(
-                        'Reservar',
-                        style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700),
-                      ),
+                ],
+              ),
+              const SizedBox(height: 6),
+
+              // Stock / Ubicación
+              Row(
+                children: [
+                  const Icon(
+                    Icons.inventory_2_outlined,
+                    size: 16,
+                    color: AppColors.slate500,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Stock: 1 unidad disponible',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: AppColors.slate500,
+                      fontWeight: FontWeight.w400,
                     ),
-                  ],
+                  ),
                 ],
               ),
 
-              // SECCIÓN DETALLE EXPANDIDA (Fondo oscuro con información exhaustiva)
-              AnimatedCrossFade(
-                firstChild: const SizedBox.shrink(),
-                secondChild: Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Divider(color: Colors.white24, height: 20),
-
-                      // Estado detallado
-                      Row(
-                        children: [
-                          const Icon(Icons.check_circle_outline, size: 16, color: AppColors.yellowDefault),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Estado: Disponible en taller (listo para asignación)',
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                color: Colors.white.withValues(alpha: 0.9),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Categoría con chip
-                      Row(
-                        children: [
-                          const Icon(Icons.label_outline, size: 16, color: AppColors.yellowDefault),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Categoría: ',
-                            style: GoogleFonts.inter(fontSize: 13, color: Colors.white70),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              repuesto.categoria,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Ubicación en taller
-                      Row(
-                        children: [
-                          const Icon(Icons.store_mall_directory_outlined, size: 16, color: AppColors.yellowDefault),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Ubicación: Taller Central — Estantería de repuestos',
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                color: Colors.white.withValues(alpha: 0.85),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Fecha de alta en inventario
-                      if (repuesto.createdAt != null) ...[
-                        Row(
-                          children: [
-                            const Icon(Icons.schedule, size: 16, color: AppColors.yellowDefault),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'Ingreso al inventario: ${_formatearFecha(repuesto.createdAt)}',
-                                style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  color: Colors.white.withValues(alpha: 0.85),
-                                ),
-                              ),
-                            ),
-                          ],
+              // Descripción si existe o al expandir
+              if (repuesto.descripcion != null && repuesto.descripcion!.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.notes_rounded,
+                      size: 16,
+                      color: AppColors.slate500,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        repuesto.descripcion!,
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: AppColors.slate500,
+                          fontWeight: FontWeight.w400,
                         ),
-                        const SizedBox(height: 8),
-                      ],
-
-                      const SizedBox(height: 8),
-
-                      // Botón principal de acción prominente en modo detalle
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: widget.onReservar,
-                          icon: const Icon(Icons.bookmark_add_outlined, size: 18, color: Colors.black),
-                          label: Text(
-                            'Reservar para un Equipo',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.yellowDefault,
-                            foregroundColor: Colors.black,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          ),
-                        ),
+                        maxLines: _isExpanded ? null : 1,
+                        overflow: _isExpanded ? null : TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                crossFadeState: _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-                duration: const Duration(milliseconds: 250),
+              ],
+
+              const SizedBox(height: 14),
+
+              // Fila Inferior: Botón de acción Reservar
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: widget.onReservar,
+                    icon: const Icon(
+                      Icons.bookmark_add_outlined,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                      'Reservar',
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.slate800,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
