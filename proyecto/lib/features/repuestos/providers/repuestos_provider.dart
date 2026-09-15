@@ -46,37 +46,73 @@ class RepuestosProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> reservarRepuesto(String repuestoId, String equipo, String motivo) async {
+  Future<bool> reservarRepuesto(String repuestoId, String equipo, String motivo) async {
+    _lastError = null;
     final userId = _supabase.auth.currentUser?.id;
-    if (userId == null) return;
+    if (userId == null) {
+      _lastError = 'No hay sesión de usuario activa.';
+      return false;
+    }
 
     try {
-      await _supabase.from('repuesto').update({
+      // RNF-06: Mutación atómica con filtro estricto de estado 'disponible'
+      // Si otro técnico lo reservó simultáneamente, no actualizará ninguna fila.
+      final response = await _supabase.from('repuesto').update({
         'estado': 'reservado',
         'equipo_destino': equipo,
         'motivo': motivo,
         'reservado_por': userId,
         'fecha_reserva': DateTime.now().toIso8601String(),
-      }).eq('id', repuestoId);
-      
+      }).eq('id', repuestoId).eq('estado', 'disponible').select('id');
+
+      final updatedList = response as List;
+      if (updatedList.isEmpty) {
+        _lastError = 'Este repuesto ya fue reservado por otro técnico en el taller.';
+        await fetchRepuestos();
+        return false;
+      }
+
       await fetchRepuestos(); // Refrescar listas
+      return true;
     } catch (e) {
+      _lastError = 'No se pudo completar la reserva. Revisa tu conexión e inténtalo de nuevo.';
       debugPrint('Error reserving: $e');
+      return false;
     }
   }
 
-  Future<bool> liberarRepuesto(String repuestoId) async {
+  /// Libera [cantidadALiberar] unidades de la reserva al inventario disponible.
+  /// Si [cantidadALiberar] >= cantidad reservada → liberación total (estado='disponible').
+  /// Si [cantidadALiberar] < cantidad reservada → liberación parcial (solo decrementa cantidad).
+  Future<bool> liberarRepuesto(String repuestoId, int cantidadALiberar) async {
     _lastError = null;
     try {
-      await _supabase.from('repuesto').update({
-        'estado': 'disponible',
-        'equipo_destino': null,
-        'motivo': null,
-        'reservado_por': null,
-        'fecha_reserva': null,
-      }).eq('id', repuestoId);
-      
-      await fetchRepuestos(); // Refrescar listas
+      // Buscar el repuesto actual para conocer su cantidad reservada
+      final repuesto = _misReservas.firstWhere(
+        (r) => r.id == repuestoId,
+        orElse: () => _reservados.firstWhere((r) => r.id == repuestoId),
+      );
+      final cantidadActual = repuesto.cantidad;
+      final nuevaCantidad = cantidadActual - cantidadALiberar;
+
+      if (nuevaCantidad <= 0) {
+        // Liberación total: devolver al taller como disponible
+        await _supabase.from('repuesto').update({
+          'estado': 'disponible',
+          'cantidad': 1,
+          'equipo_destino': null,
+          'motivo': null,
+          'reservado_por': null,
+          'fecha_reserva': null,
+        }).eq('id', repuestoId);
+      } else {
+        // Liberación parcial: solo decrementar cantidad
+        await _supabase.from('repuesto').update({
+          'cantidad': nuevaCantidad,
+        }).eq('id', repuestoId);
+      }
+
+      await fetchRepuestos();
       return true;
     } catch (e) {
       _lastError = e.toString();
@@ -85,18 +121,55 @@ class RepuestosProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> marcarComoUsado(String repuestoId) async {
+  /// Marca [cantidadUsada] unidades como consumidas y las descuenta del inventario.
+  /// Si la cantidad restante llega a 0 → estado='usado'.
+  /// Si queda stock → solo decrementa cantidad manteniendo estado='reservado'.
+  Future<bool> marcarComoUsado(String repuestoId, int cantidadUsada) async {
     _lastError = null;
     try {
-      await _supabase.from('repuesto').update({
-        'estado': 'usado',
-      }).eq('id', repuestoId);
-      
-      await fetchRepuestos(); // Refrescar listas
+      final repuesto = _misReservas.firstWhere(
+        (r) => r.id == repuestoId,
+        orElse: () => _reservados.firstWhere((r) => r.id == repuestoId),
+      );
+      final cantidadActual = repuesto.cantidad;
+      final nuevaCantidad = cantidadActual - cantidadUsada;
+
+      if (nuevaCantidad <= 0) {
+        // Consumo total: marcar como usado
+        await _supabase.from('repuesto').update({
+          'estado': 'usado',
+          'cantidad': 0,
+        }).eq('id', repuestoId);
+      } else {
+        // Consumo parcial: decrementar cantidad, mantener reservado
+        await _supabase.from('repuesto').update({
+          'cantidad': nuevaCantidad,
+        }).eq('id', repuestoId);
+      }
+
+      await fetchRepuestos();
       return true;
     } catch (e) {
       _lastError = e.toString();
       debugPrint('Error marking as used: $e');
+      return false;
+    }
+  }
+
+  /// Actualiza el equipo destino y el motivo de una reserva activa.
+  Future<bool> editarReserva(String repuestoId, String nuevoEquipo, String nuevoMotivo) async {
+    _lastError = null;
+    try {
+      await _supabase.from('repuesto').update({
+        'equipo_destino': nuevoEquipo.trim(),
+        'motivo': nuevoMotivo.trim().isEmpty ? null : nuevoMotivo.trim(),
+      }).eq('id', repuestoId).eq('estado', 'reservado');
+
+      await fetchRepuestos();
+      return true;
+    } catch (e) {
+      _lastError = e.toString();
+      debugPrint('Error editing reservation: $e');
       return false;
     }
   }

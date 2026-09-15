@@ -4,10 +4,16 @@ class Repuesto {
   final String categoria;
   final String estado;
   final String tiendaId;
+
+  /// Número de unidades del repuesto. Permite reservas y liberaciones parciales.
+  /// DEFAULT 1 en BD — nunca puede ser negativo.
+  final int cantidad;
+
   final String? descripcion;
   final String? equipoDestino;
   final String? motivo;
   final String? reservadoPor;
+
   /// Nombre legible del técnico que realizó la reserva.
   /// Viene del JOIN con la tabla `tecnico` en el query del provider.
   final String? reservadoPorNombre;
@@ -20,6 +26,7 @@ class Repuesto {
     required this.categoria,
     required this.estado,
     required this.tiendaId,
+    this.cantidad = 1,
     this.descripcion,
     this.equipoDestino,
     this.motivo,
@@ -40,6 +47,7 @@ class Repuesto {
       categoria: json['categoria'],
       estado: json['estado'],
       tiendaId: json['tienda_id'],
+      cantidad: (json['cantidad'] as int?) ?? 1,
       descripcion: json['descripcion'] as String?,
       equipoDestino: json['equipo_destino'],
       motivo: json['motivo'],
@@ -61,6 +69,7 @@ class Repuesto {
     String? categoria,
     String? estado,
     String? tiendaId,
+    int? cantidad,
     String? descripcion,
     String? equipoDestino,
     String? motivo,
@@ -75,6 +84,7 @@ class Repuesto {
       categoria: categoria ?? this.categoria,
       estado: estado ?? this.estado,
       tiendaId: tiendaId ?? this.tiendaId,
+      cantidad: cantidad ?? this.cantidad,
       descripcion: descripcion ?? this.descripcion,
       equipoDestino: equipoDestino ?? this.equipoDestino,
       motivo: motivo ?? this.motivo,

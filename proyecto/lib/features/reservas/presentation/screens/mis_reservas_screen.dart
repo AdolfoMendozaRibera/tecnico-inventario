@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../repuestos/providers/repuestos_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/reservation_card.dart';
+import '../widgets/gestionar_reserva_sheet.dart';
 
 class MisReservasScreen extends StatefulWidget {
   const MisReservasScreen({super.key});
@@ -16,10 +17,34 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
 
+  /// Mensaje de éxito a mostrar como banner verde en la parte superior.
+  /// null = no mostrar banner.
+  String? _bannerMensaje;
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  /// Abre el GestionarReservaSheet y registra el callback de éxito.
+  void _abrirGestionSheet(BuildContext ctx, dynamic repuesto) {
+    showModalBottomSheet(
+      context: ctx,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => GestionarReservaSheet(
+        repuesto: repuesto,
+        onAccionExitosa: (mensaje) {
+          if (!mounted) return;
+          setState(() => _bannerMensaje = mensaje);
+          // Auto-ocultar el banner tras 3 segundos
+          Future.delayed(const Duration(seconds: 3), () {
+            if (mounted) setState(() => _bannerMensaje = null);
+          });
+        },
+      ),
+    );
   }
 
   @override
@@ -48,322 +73,271 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
 
             if (provider.isLoading) {
               return const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.slate800,
-                ),
+                child: CircularProgressIndicator(color: AppColors.slate800),
               );
             }
 
             final filtered = repuestos.where((r) {
               if (_searchQuery.isEmpty) return true;
               final query = _searchQuery.toLowerCase();
-              final nombre = (r.nombre).toLowerCase();
-              final categoria = (r.categoria).toLowerCase();
-              final equipo = (r.equipoDestino ?? '').toLowerCase();
-              final motivo = (r.motivo ?? '').toLowerCase();
-              return nombre.contains(query) ||
-                  categoria.contains(query) ||
-                  equipo.contains(query) ||
-                  motivo.contains(query);
+              return r.nombre.toLowerCase().contains(query) ||
+                  r.categoria.toLowerCase().contains(query) ||
+                  (r.equipoDestino ?? '').toLowerCase().contains(query) ||
+                  (r.motivo ?? '').toLowerCase().contains(query);
             }).toList();
 
-            return RefreshIndicator(
-              color: AppColors.slate800,
-              onRefresh: () => provider.fetchRepuestos(),
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
-                children: [
-                  // Subtítulo / Contador con el estilo de Figma
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0, left: 2.0),
-                    child: Text(
-                      count == 1
-                          ? 'Tienes 1 repuesto reservado para tus reparaciones actuales'
-                          : 'Tienes $count repuestos reservados para tus reparaciones actuales',
-                      style: GoogleFonts.inter(
-                        fontSize: 13,
-                        color: AppColors.slate500,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+            return Column(
+              children: [
+                // ─── Banner verde de éxito (auto-hide) ───────────────────────
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: _bannerMensaje != null
+                      ? Container(
+                          key: const ValueKey('banner'),
+                          width: double.infinity,
+                          margin: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF10B981),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.check_circle_outline_rounded,
+                                  color: Colors.white, size: 18),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  _bannerMensaje!,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () =>
+                                    setState(() => _bannerMensaje = null),
+                                child: const Icon(Icons.close_rounded,
+                                    color: Colors.white, size: 18),
+                              ),
+                            ],
+                          ),
+                        )
+                      : const SizedBox.shrink(key: ValueKey('no-banner')),
+                ),
 
-                  // Barra de búsqueda si hay piezas
-                  if (repuestos.isNotEmpty) ...[
-                    TextField(
-                      controller: _searchController,
-                      onChanged: (val) {
-                        setState(() {
-                          _searchQuery = val.trim();
-                        });
-                      },
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: AppColors.slate900,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Buscar en mis reservas...',
-                        hintStyle: GoogleFonts.inter(
-                          color: const Color(0xFF94A3B8),
-                          fontSize: 14,
-                        ),
-                        prefixIcon: const Icon(
-                          Icons.search_rounded,
-                          color: Color(0xFF94A3B8),
-                          size: 20,
-                        ),
-                        suffixIcon: _searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear_rounded, size: 18, color: AppColors.slate500),
-                                onPressed: () {
-                                  _searchController.clear();
-                                  setState(() => _searchQuery = '');
-                                },
-                              )
-                            : null,
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: AppColors.slate200,
-                            width: 1.5,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: AppColors.slate800,
-                            width: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-
-                  // Lista de tarjetas
-                  if (repuestos.isEmpty) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 20),
-                      alignment: Alignment.center,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.bookmark_border_rounded,
-                            size: 56,
-                            color: Color(0xFF94A3B8),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'No tienes reservas activas',
+                // ─── Lista principal ──────────────────────────────────────────
+                Expanded(
+                  child: RefreshIndicator(
+                    color: AppColors.slate800,
+                    onRefresh: () => provider.fetchRepuestos(),
+                    child: ListView(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
+                      children: [
+                        // Subtítulo dinámico
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12, left: 2),
+                          child: Text(
+                            count == 0
+                                ? 'No tienes repuestos pendientes por usar'
+                                : 'Tienes $count repuesto${count != 1 ? 's' : ''} reservado${count != 1 ? 's' : ''} listo${count != 1 ? 's' : ''} para usar',
                             style: GoogleFonts.inter(
-                              fontSize: 15,
+                              fontSize: 13,
                               color: AppColors.slate500,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+
+                        // Barra de búsqueda
+                        if (repuestos.isNotEmpty) ...[
+                          TextField(
+                            controller: _searchController,
+                            onChanged: (val) =>
+                                setState(() => _searchQuery = val.trim()),
+                            style: GoogleFonts.inter(
+                                fontSize: 14, color: AppColors.slate900),
+                            decoration: InputDecoration(
+                              hintText: 'Buscar en mis reservas...',
+                              hintStyle: GoogleFonts.inter(
+                                  color: AppColors.slate400, fontSize: 14),
+                              prefixIcon: const Icon(Icons.search_rounded,
+                                  color: AppColors.slate400, size: 20),
+                              suffixIcon: _searchQuery.isNotEmpty
+                                  ? IconButton(
+                                      icon: const Icon(Icons.clear_rounded,
+                                          size: 18, color: AppColors.slate500),
+                                      onPressed: () {
+                                        _searchController.clear();
+                                        setState(() => _searchQuery = '');
+                                      },
+                                    )
+                                  : null,
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 14),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                    color: AppColors.slate200, width: 1.5),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                    color: AppColors.slate800, width: 1.5),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+
+                        // Estado vacío mejorado (¡Todo al día!)
+                        if (repuestos.isEmpty) ...[
+                          const SizedBox(height: 32),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 40, horizontal: 24),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                  color: AppColors.slate200, width: 1.5),
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: 64,
+                                  height: 64,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFD1FAE5),
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  child: const Icon(
+                                    Icons.bookmark_added_rounded,
+                                    size: 32,
+                                    color: Color(0xFF10B981),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  '¡Todo al día!',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.slate900,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Has marcado y consumido todos los repuestos\nque tenías reservados para tus trabajos.',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    color: AppColors.slate500,
+                                    height: 1.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                ElevatedButton.icon(
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.search_rounded,
+                                      size: 16),
+                                  label: const Text('Ir al Catálogo de Repuestos'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.slate900,
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    textStyle: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                      ),
-                    ),
-                  ] else if (filtered.isEmpty) ...[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 32),
-                      child: Center(
-                        child: Text(
-                          'No se encontraron reservas con "$_searchQuery"',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: AppColors.slate500,
+
+                        // Sin resultados de búsqueda
+                        if (repuestos.isNotEmpty && filtered.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 32),
+                            child: Center(
+                              child: Text(
+                                'No se encontraron reservas con "$_searchQuery"',
+                                style: GoogleFonts.inter(
+                                    fontSize: 14, color: AppColors.slate500),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                  ] else ...[
-                    ...filtered.map((repuesto) {
-                      return ReservationCard(
-                        repuesto: repuesto,
-                        isMiReserva: true,
-                        useRedLiberarButton: true,
-                        onMarcarUsado: () async {
-                          final confirmar = await showDialog<bool>(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+
+                        // Lista de tarjetas — tap abre GestionarReservaSheet
+                        if (filtered.isNotEmpty)
+                          ...filtered.map((repuesto) {
+                            return GestureDetector(
+                              onTap: () =>
+                                  _abrirGestionSheet(context, repuesto),
+                              child: ReservationCard(
+                                repuesto: repuesto,
+                                isMiReserva: true,
+                                useRedLiberarButton: true,
+                                onMarcarUsado: () =>
+                                    _abrirGestionSheet(context, repuesto),
+                                onLiberar: () =>
+                                    _abrirGestionSheet(context, repuesto),
                               ),
-                              title: Text(
-                                'Marcar como Usado',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 18,
-                                  color: AppColors.slate900,
-                                ),
-                              ),
-                              content: Text(
-                                '¿Confirmas que utilizaste "${repuesto.nombre}" para "${repuesto.equipoDestino ?? 'el equipo'}"?\n\nLa pieza se descontará permanentemente del inventario.',
-                                style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  color: const Color(0xFF475569),
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(ctx, false),
-                                  child: Text(
-                                    'Cancelar',
-                                    style: GoogleFonts.inter(color: AppColors.slate500),
+                            );
+                          }),
+
+                        // Sección CTA "¿Necesitas otro repuesto?"
+                        if (repuestos.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: AppColors.slate50,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                  color: AppColors.slate200, width: 1.5),
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  '¿Necesitas otro repuesto?',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.slate900,
                                   ),
                                 ),
-                                ElevatedButton(
-                                  onPressed: () => Navigator.pop(ctx, true),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.slate800,
-                                    foregroundColor: Colors.white,
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Busca en la pestaña Repuestos →',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    color: const Color(0xFF1E3A5F),
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  child: const Text('Confirmar Uso'),
                                 ),
                               ],
                             ),
-                          );
-
-                          if (confirmar != true || !context.mounted) return;
-
-                          final exito = await provider.marcarComoUsado(repuesto.id);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(exito
-                                    ? 'Repuesto marcado como usado (descontado del inventario)'
-                                    : 'Error al marcar como usado: ${provider.lastError ?? "Rechazado"}'),
-                                backgroundColor: exito ? AppColors.slate800 : Theme.of(context).colorScheme.error,
-                              ),
-                            );
-                          }
-                        },
-                        onLiberar: () async {
-                          final confirmar = await showDialog<bool>(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              title: Text(
-                                'Liberar al Taller',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 18,
-                                  color: AppColors.slate900,
-                                ),
-                              ),
-                              content: Text(
-                                '¿Deseas devolver "${repuesto.nombre}" al inventario disponible para cualquier técnico del taller?',
-                                style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  color: const Color(0xFF475569),
-                                ),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(ctx, false),
-                                  child: Text(
-                                    'Cancelar',
-                                    style: GoogleFonts.inter(color: AppColors.slate500),
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () => Navigator.pop(ctx, true),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFFDC2626),
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  child: const Text('Liberar Repuesto'),
-                                ),
-                              ],
-                            ),
-                          );
-
-                          if (confirmar != true || !context.mounted) return;
-
-                          final exito = await provider.liberarRepuesto(repuesto.id);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(exito
-                                    ? 'Repuesto liberado y devuelto a disponibles'
-                                    : 'Error al liberar el repuesto.'),
-                                backgroundColor: exito ? AppColors.slate800 : Theme.of(context).colorScheme.error,
-                              ),
-                            );
-                          }
-                        },
-                      );
-                    }),
-                  ],
-
-                  // Sección inferior (Dashed Card Figma: "¿Necesitas otro repuesto?")
-                  const SizedBox(height: 12),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.slate50,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: const Color(0xFFCBD5E1),
-                        width: 1.5,
-                        style: BorderStyle.solid,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        const Icon(
-                          Icons.help_outline_rounded,
-                          size: 32,
-                          color: Color(0xFF64748B),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          '¿Necesitas otro repuesto?',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.slate900,
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Explora las piezas disponibles en el taller y resérvalas para tu reparación.',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            color: AppColors.slate500,
-                          ),
-                        ),
-                        const SizedBox(height: 14),
-                        OutlinedButton.icon(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          icon: const Icon(Icons.search_rounded, size: 16),
-                          label: const Text('Buscar en el Inventario'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.slate800,
-                            side: const BorderSide(color: AppColors.slate200, width: 1.5),
-                            backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
+                        ],
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),

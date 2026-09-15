@@ -6,7 +6,12 @@ import 'agregar_repuesto_preview_screen.dart';
 /// Pantalla 1 del Flujo v0.4 — "Agregar un repuesto al inventario"
 /// El técnico ingresa los datos del nuevo repuesto antes de revisarlos.
 class AgregarRepuestoFormScreen extends StatefulWidget {
-  const AgregarRepuestoFormScreen({super.key});
+  final String? nombreInicial;
+
+  const AgregarRepuestoFormScreen({
+    super.key,
+    this.nombreInicial,
+  });
 
   @override
   State<AgregarRepuestoFormScreen> createState() =>
@@ -16,11 +21,17 @@ class AgregarRepuestoFormScreen extends StatefulWidget {
 class _AgregarRepuestoFormScreenState
     extends State<AgregarRepuestoFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nombreController = TextEditingController();
+  late final TextEditingController _nombreController;
   final _descripcionController = TextEditingController();
 
   /// Categoría seleccionada del menú desplegable
   String? _categoriaSeleccionada;
+
+  @override
+  void initState() {
+    super.initState();
+    _nombreController = TextEditingController(text: widget.nombreInicial ?? '');
+  }
 
   static const List<String> _categorias = [
     'Pantallas',

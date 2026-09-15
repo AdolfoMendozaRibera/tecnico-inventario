@@ -33,10 +33,13 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                 // Ícono central con aura celeste suave
                 Center(
                   child: Container(
@@ -96,6 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: AppColors.loginSubtitle,
                       fontSize: 15,
                     ),
+                    isDense: true,
                     prefixIcon: const Icon(
                       Icons.mail_outline_rounded,
                       color: AppColors.loginSubtitle,
@@ -105,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     fillColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
-                      vertical: 18,
+                      vertical: 16,
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -139,6 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: AppColors.loginSubtitle,
                       fontSize: 15,
                     ),
+                    isDense: true,
                     prefixIcon: const Icon(
                       Icons.lock_outline_rounded,
                       color: AppColors.loginSubtitle,
@@ -162,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     fillColor: Colors.white,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
-                      vertical: 18,
+                      vertical: 16,
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -237,6 +242,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ],
+                ),
+              ),
             ),
           ),
         ),
