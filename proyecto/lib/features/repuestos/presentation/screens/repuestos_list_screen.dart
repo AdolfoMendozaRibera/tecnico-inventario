@@ -43,6 +43,18 @@ class RepuestosListScreen extends StatelessWidget {
                   letterSpacing: -0.4,
                 ),
               ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline_rounded, color: Color(0xFF2563EB), size: 26),
+                  tooltip: 'Nuevo Repuesto',
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => const AgregarRepuestoFormScreen(),
+                    ));
+                  },
+                ),
+                const SizedBox(width: 8),
+              ],
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(48),
                 child: Container(

@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import '../../providers/repuestos_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../reservas/presentation/screens/reservar_screen.dart';
+import 'agregar_repuesto_form_screen.dart';
 
-/// Pantalla 3 del Flujo v0.4 — "Agregar un repuesto al inventario"
-/// Muestra el listado actualizado de repuestos disponibles con
-/// el ítem recién ingresado destacado visualmente.
+/// Pantalla 3 del Flujo v0.4 — "¡Repuesto Guardado! (Ingresado exitosamente al inventario del taller)"
+/// Diseñada con fidelidad exacta a Figma (Frame 7).
 class AgregarRepuestoExitoScreen extends StatefulWidget {
   final String nombre;
   final String categoria;
+  final String? sku;
+  final String estadoPieza;
+  final String ubicacion;
+  final int cantidad;
   final String? lastAddedId;
 
   const AgregarRepuestoExitoScreen({
     super.key,
     required this.nombre,
     required this.categoria,
+    this.sku,
+    this.estadoPieza = 'Nuevo',
+    this.ubicacion = 'Estante B - Cajón 2',
+    this.cantidad = 1,
     this.lastAddedId,
   });
 
@@ -35,7 +42,7 @@ class _AgregarRepuestoExitoScreenState
     super.initState();
     _checkController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 600),
     );
     _checkScale = CurvedAnimation(
       parent: _checkController,
@@ -50,292 +57,359 @@ class _AgregarRepuestoExitoScreenState
     super.dispose();
   }
 
+  void _irAReservar(BuildContext context) {
+    if (widget.lastAddedId != null) {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (_) => ReservarScreen(
+          repuestoId: widget.lastAddedId!,
+          repuestoNombre: widget.nombre,
+        ),
+      ));
+    } else {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
+  }
+
+  void _volverAlInventario(BuildContext context) {
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+
+  void _ingresarOtroRepuesto(BuildContext context) {
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (_) => const AgregarRepuestoFormScreen(),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // El técnico sale limpio hacia el inventario
-        automaticallyImplyLeading: false,
-        title: Text(
-          'Inventario del Taller',
-          style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 20),
-        ),
-        actions: [
-          TextButton.icon(
-            onPressed: () => _volverAlInventario(context),
-            icon: const Icon(Icons.done, size: 18, color: Colors.black),
-            label: Text(
-              'Listo',
-              style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w700, color: Colors.black),
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: const Color(0xFF94A3B8).withValues(alpha: 0.6),
       body: SafeArea(
-        child: Column(
-          children: [
-            // ── Banner de éxito animado ──────────────────────────────────
-            _SuccessBanner(
-              nombre: widget.nombre,
-              checkScale: _checkScale,
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 22.0, vertical: 24.0),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
             ),
-
-            // ── Listado de disponibles con ítem destacado ────────────────
-            Expanded(
-              child: Consumer<RepuestosProvider>(
-                builder: (context, provider, child) {
-                  if (provider.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  final disponibles = provider.disponibles;
-
-                  if (disponibles.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.inventory_2_outlined,
-                              size: 64, color: Colors.grey.shade300),
-                          const SizedBox(height: 12),
-                          Text('El inventario se está actualizando…',
-                              style: GoogleFonts.inter(
-                                  color: Colors.grey.shade500, fontSize: 14)),
-                        ],
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.slate300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ScaleTransition(
+                    scale: _checkScale,
+                    child: Container(
+                      width: 68,
+                      height: 68,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDCFCE7),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFFBBF7D0), width: 3),
                       ),
-                    );
-                  }
-
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 12),
-                    itemCount: disponibles.length,
-                    itemBuilder: (ctx, index) {
-                      final r = disponibles[index];
-                      final esNuevo = r.id == widget.lastAddedId;
-                      return _RepuestoRow(
-                        nombre: r.nombre,
-                        categoria: r.categoria,
-                        esNuevo: esNuevo,
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-
-            // ── Botón de acción final ────────────────────────────────────
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () => _volverAlInventario(context),
-                  icon: const Icon(Icons.inventory_2_outlined,
-                      size: 20, color: Colors.black),
-                  label: Text(
-                    'Ver inventario completo',
+                      child: const Center(
+                        child: Icon(
+                          Icons.check_rounded,
+                          size: 38,
+                          color: Color(0xFF10B981),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '¡Repuesto Guardado!',
                     style: GoogleFonts.inter(
-                        fontSize: 16, fontWeight: FontWeight.bold),
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.slate900,
+                      letterSpacing: -0.5,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.yellowDefault,
-                    foregroundColor: Colors.black,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18)),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Ingresado exitosamente al inventario del taller',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.slate500,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
+                  const SizedBox(height: 22),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.slate50,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: AppColors.slate200, width: 1.2),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.nombre,
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.slate900,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          '${widget.sku != null && widget.sku!.isNotEmpty ? "SKU: ${widget.sku} • " : ""}Categoría: ${widget.categoria}',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.slate500,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        const Divider(color: AppColors.slate200, height: 1, thickness: 1),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'UBICACIÓN EN TALLER',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.slate400,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFEFF6FF),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF2563EB)),
+                                        const SizedBox(width: 4),
+                                        Flexible(
+                                          child: Text(
+                                            widget.ubicacion,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w700,
+                                              color: const Color(0xFF1D4ED8),
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'CANTIDAD DISPONIBLE',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.slate400,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF1F5F9),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      widget.cantidad == 1 ? '1 Unidad disponible' : '${widget.cantidad} Unidades disponibles',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.slate800,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'ESTADO DE LA PIEZA',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.slate400,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFEF3C7),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      widget.estadoPieza == 'Nuevo' ? 'Nuevo (0 Horas)' : widget.estadoPieza,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFFB45309),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'REGISTRADO POR',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.slate400,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF1F5F9),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      'Carlos (Técnico)',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.slate800,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _irAReservar(context),
+                      icon: const Icon(Icons.lock_outline_rounded, size: 20, color: Color(0xFF38BDF8)),
+                      label: Text(
+                        'Reservar ahora para un Equipo',
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF1E293B),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: OutlinedButton(
+                      onPressed: () => _volverAlInventario(context),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.slate800,
+                        side: const BorderSide(color: AppColors.slate300, width: 1.5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: Text(
+                        'Ver en el Inventario del Taller',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.slate800,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: TextButton(
+                      onPressed: () => _ingresarOtroRepuesto(context),
+                      style: TextButton.styleFrom(
+                        backgroundColor: AppColors.slate50,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          side: const BorderSide(color: AppColors.slate200),
+                        ),
+                      ),
+                      child: Text(
+                        '+ Ingresar Otro Repuesto',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.slate700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
   }
-
-  /// Limpia el lastAddedId y saca todas las pantallas del flujo v0.4 de la pila.
-  void _volverAlInventario(BuildContext context) {
-    context.read<RepuestosProvider>().clearLastAddedId();
-    // Pop hasta la raíz del stack de navegación para volver al inventario
-    Navigator.of(context).popUntil((route) => route.isFirst);
-  }
 }
 
-// ── Widgets privados auxiliares ─────────────────────────────────────────────
-
-class _SuccessBanner extends StatelessWidget {
-  final String nombre;
-  final Animation<double> checkScale;
-
-  const _SuccessBanner({required this.nombre, required this.checkScale});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      decoration: BoxDecoration(
-        color: AppColors.statGreenBg,
-        border: Border(
-          bottom: BorderSide(color: AppColors.statGreenBorder),
-        ),
-      ),
-      child: Row(
-        children: [
-          ScaleTransition(
-            scale: checkScale,
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                color: AppColors.statGreenText,
-                shape: BoxShape.circle,
-              ),
-              child:
-                  const Icon(Icons.check, color: Colors.white, size: 22),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '¡Repuesto ingresado!',
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.statGreenText,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '"$nombre" ya está disponible en el inventario.',
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    color: AppColors.statGreenText,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Fila de un repuesto en la lista de éxito.
-/// El repuesto recién agregado se destaca con borde amarillo y chip "Nuevo".
-class _RepuestoRow extends StatelessWidget {
-  final String nombre;
-  final String categoria;
-  final bool esNuevo;
-
-  const _RepuestoRow({
-    required this.nombre,
-    required this.categoria,
-    required this.esNuevo,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: esNuevo
-            ? AppColors.yellowDefault.withValues(alpha: 0.10)
-            : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: esNuevo ? AppColors.yellowDefault : AppColors.cardBorder,
-          width: esNuevo ? 2 : 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: esNuevo
-                  ? AppColors.yellowDefault
-                  : Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              Icons.build_outlined,
-              size: 16,
-              color: esNuevo ? Colors.black : Colors.grey.shade600,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  nombre,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  categoria,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: Colors.grey.shade500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (esNuevo)
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: AppColors.yellowDefault,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                'Nuevo',
-                style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.black),
-              ),
-            )
-          else
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: AppColors.statGreenBg,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                'Disponible',
-                style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.statGreenText),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
