@@ -6,6 +6,7 @@ import 'core/supabase_client.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/auth/providers/auth_provider.dart';
+import 'features/historial/providers/historial_provider.dart';
 import 'features/home/presentation/screens/main_screen.dart';
 import 'features/home/providers/navigation_provider.dart';
 import 'features/repuestos/providers/repuestos_provider.dart';
@@ -22,6 +23,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => RepuestosProvider()),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
+        ChangeNotifierProvider(create: (_) => HistorialProvider()),
       ],
       child: const VaultTecnoApp(),
     ),

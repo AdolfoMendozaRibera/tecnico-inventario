@@ -7,12 +7,13 @@ import '../../../repuestos/providers/repuestos_provider.dart';
 import '../../../inicio/presentation/screens/inicio_screen.dart';
 import '../../../repuestos/presentation/screens/repuestos_list_screen.dart';
 import '../../../reservas/presentation/screens/mis_reservas_screen.dart';
+import '../../../historial/presentation/screens/historial_screen.dart';
 
 import '../../providers/navigation_provider.dart';
 
 class MainScreen extends StatefulWidget {
   /// Tab index to open on first render.
-  /// 0 = Inicio, 1 = Repuestos (Inventario), 2 = Reservas (Mis Reservas)
+  /// 0 = Inicio, 1 = Repuestos (Inventario), 2 = Reservas (Mis Reservas), 3 = Historial
   final int initialTab;
 
   const MainScreen({super.key, this.initialTab = 0});
@@ -43,6 +44,7 @@ class _MainScreenState extends State<MainScreen> {
     InicioScreen(),
     RepuestosListScreen(),
     MisReservasScreen(),
+    HistorialScreen(),
   ];
 
   @override
@@ -117,6 +119,11 @@ class _MainScreenState extends State<MainScreen> {
                 icon: Icon(Icons.bookmark_border_rounded),
                 selectedIcon: Icon(Icons.bookmark_rounded),
                 label: 'Reservas',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.history_rounded),
+                selectedIcon: Icon(Icons.manage_history_rounded),
+                label: 'Historial',
               ),
             ],
           ),

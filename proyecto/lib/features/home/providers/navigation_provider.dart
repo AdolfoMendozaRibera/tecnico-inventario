@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 /// - 0: Inicio (Resumen del taller)
 /// - 1: Repuestos (Inventario / Catálogo)
 /// - 2: Reservas (Mis Reservas activas)
+/// - 3: Historial (Trazabilidad de reparaciones y mermas)
 class NavigationProvider extends ChangeNotifier {
   int _currentIndex = 0;
 
