@@ -64,3 +64,13 @@ Presentarse, no presentarse, el docente ya sabe quienes somos, directo a vender 
 
 ----
 El programador pragmatico, es recomendable
+
+
+
+-----------------
+
+
+- Documento
+- Diseño figma
+- Aplicacion (opcional que este en la playstore)
+- Grabar videos

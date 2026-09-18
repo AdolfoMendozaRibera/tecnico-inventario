@@ -47,9 +47,9 @@ class InicioScreen extends StatelessWidget {
       body: SafeArea(
         child: Consumer<RepuestosProvider>(
           builder: (context, provider, child) {
-            final int countDisponibles = provider.disponibles.length;
-            final int countReservados = provider.reservados.length;
-            final int countMisReservas = provider.misReservas.length;
+            final int countDisponibles = provider.disponibles.fold<int>(0, (sum, r) => sum + r.cantidad);
+            final int countReservados = provider.reservados.fold<int>(0, (sum, r) => sum + r.cantidad);
+            final int countMisReservas = provider.misReservas.fold<int>(0, (sum, r) => sum + r.cantidad);
 
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../repuestos/data/repuesto_model.dart';
@@ -53,7 +54,10 @@ class _EditarReservaSheetState extends State<EditarReservaSheet> {
     );
     if (!mounted) return;
     Navigator.pop(context);
-    if (exito) widget.onConfirmar('Reserva actualizada correctamente');
+    if (exito) {
+      HapticFeedback.lightImpact();
+      widget.onConfirmar('Reserva actualizada correctamente');
+    }
   }
 
   @override

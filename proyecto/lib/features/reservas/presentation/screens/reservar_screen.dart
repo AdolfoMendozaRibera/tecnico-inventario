@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../repuestos/providers/repuestos_provider.dart';
@@ -32,6 +33,24 @@ class _ReservarScreenState extends State<ReservarScreen> {
   bool _isSubmitting = false;
   String? _errorMessage;
 
+  int get _currentCantidad => int.tryParse(_cantidadController.text.trim()) ?? 1;
+
+  void _incrementCantidad() {
+    final current = int.tryParse(_cantidadController.text.trim()) ?? 0;
+    final next = current + 1;
+    _cantidadController.text = next.toString();
+    setState(() {});
+  }
+
+  void _decrementCantidad() {
+    final current = int.tryParse(_cantidadController.text.trim()) ?? 1;
+    if (current > 1) {
+      final next = current - 1;
+      _cantidadController.text = next.toString();
+      setState(() {});
+    }
+  }
+
   @override
   void dispose() {
     _equipoController.dispose();
@@ -49,24 +68,37 @@ class _ReservarScreenState extends State<ReservarScreen> {
       return;
     }
 
+    final motivo = _motivoController.text.trim();
+    final cantidadStr = _cantidadController.text.trim();
+    final cantidadNum = int.tryParse(cantidadStr);
+    if (cantidadNum == null || cantidadNum < 1) {
+      setState(() {
+        _errorMessage = 'La cantidad debe ser un número entero mayor o igual a 1.';
+      });
+      return;
+    }
+    final cantidad = cantidadNum.toString();
+
     setState(() {
       _isSubmitting = true;
       _errorMessage = null;
     });
 
     final provider = context.read<RepuestosProvider>();
-    final motivo = _motivoController.text.trim();
-    final cantidad = _cantidadController.text.trim().isEmpty ? '1' : _cantidadController.text.trim();
-
     final exito = await provider.reservarRepuesto(
       widget.repuestoId,
       equipo,
       motivo,
+      cantidad: cantidadNum,
     );
 
     if (!mounted) return;
 
     if (exito) {
+      // Pulso háptico suave: confirma al técnico que la acción fue exitosa
+      // antes de que la pantalla cambie visualmente.
+      HapticFeedback.lightImpact();
+
       final user = SupabaseService.client.auth.currentUser;
       final tecnicoNombre = user?.email?.split('@').first ?? 'Carlos';
 
@@ -304,46 +336,117 @@ class _ReservarScreenState extends State<ReservarScreen> {
 
                   const SizedBox(height: 20),
 
-                  // Campo: Cantidad
-                  Text(
-                    'Cantidad *',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.slate900,
-                    ),
+                  // Campo: Cantidad (Contador interactivo con botones +/- y entrada manual)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Cantidad *',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.slate900,
+                        ),
+                      ),
+                      Text(
+                        'Mínimo: 1 unidad',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
-                  TextField(
-                    controller: _cantidadController,
-                    keyboardType: TextInputType.number,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: AppColors.slate900,
+                  Container(
+                    height: 52,
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: const Color(0xFFE2E8F0),
+                        width: 1.5,
+                      ),
                     ),
-                    decoration: InputDecoration(
-                      hintText: 'Ej: 1 o 2',
-                      hintStyle: GoogleFonts.inter(
-                        color: const Color(0xFF94A3B8),
-                        fontSize: 14,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFE2E8F0),
-                          width: 1.5,
+                    child: Row(
+                      children: [
+                        // Botón Decrementar (-)
+                        Material(
+                          color: _currentCantidad > 1
+                              ? const Color(0xFFF1F5F9)
+                              : const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(8),
+                          child: InkWell(
+                            onTap: _currentCantidad > 1 ? _decrementCantidad : null,
+                            borderRadius: BorderRadius.circular(8),
+                            child: SizedBox(
+                              width: 42,
+                              height: 42,
+                              child: Icon(
+                                Icons.remove_rounded,
+                                size: 20,
+                                color: _currentCantidad > 1
+                                    ? AppColors.slate800
+                                    : const Color(0xFFCBD5E1),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
+
+                        // Campo central para escribir directamente
+                        Expanded(
+                          child: TextField(
+                            controller: _cantidadController,
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            onChanged: (_) => setState(() {}),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              TextInputFormatter.withFunction((oldValue, newValue) {
+                                if (newValue.text.isEmpty) return newValue;
+                                final n = int.tryParse(newValue.text);
+                                if (n == null || n < 1) return oldValue;
+                                return newValue;
+                              }),
+                            ],
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.slate900,
+                            ),
+                            decoration: const InputDecoration(
+                              hintText: '1',
+                              hintStyle: TextStyle(color: Color(0xFF94A3B8)),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(vertical: 10),
+                              isDense: true,
+                            ),
+                          ),
+                        ),
+
+                        // Botón Incrementar (+)
+                        Material(
                           color: AppColors.slate800,
-                          width: 1.5,
+                          borderRadius: BorderRadius.circular(8),
+                          child: InkWell(
+                            onTap: _incrementCantidad,
+                            borderRadius: BorderRadius.circular(8),
+                            child: const SizedBox(
+                              width: 42,
+                              height: 42,
+                              child: Icon(
+                                Icons.add_rounded,
+                                size: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
 

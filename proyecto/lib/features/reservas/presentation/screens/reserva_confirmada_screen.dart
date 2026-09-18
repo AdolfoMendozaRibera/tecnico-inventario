@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../home/providers/navigation_provider.dart';
 
 /// Pantalla de Confirmación de Reserva exitosa según Figma (Reserva Confirmada 1.png).
 /// Muestra un resumen visual de la pieza reservada y ofrece dos caminos
@@ -243,8 +245,13 @@ class ReservaConfirmadaScreen extends StatelessWidget {
                   // Botón Primario: "Ver en Mis Reservas"
                   ElevatedButton(
                     onPressed: () {
-                      // Vuelve a la raíz de la app (tab Mis Reservas o inventario)
-                      context.go('/');
+                      // Cambia el tab activo a 'Mis Reservas' (tab 2) y regresa al MainScreen
+                      context.read<NavigationProvider>().setTab(2);
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                      } else {
+                        context.go('/', extra: {'tab': 2});
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.slate800,
@@ -269,7 +276,13 @@ class ReservaConfirmadaScreen extends StatelessWidget {
                   // Botón Secundario: "Volver al Inventario"
                   OutlinedButton(
                     onPressed: () {
-                      context.go('/');
+                      // Cambia el tab activo al catálogo de 'Repuestos' (tab 1) y regresa al MainScreen
+                      context.read<NavigationProvider>().setTab(1);
+                      if (Navigator.of(context).canPop()) {
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                      } else {
+                        context.go('/', extra: {'tab': 1});
+                      }
                     },
                     style: OutlinedButton.styleFrom(
                       backgroundColor: Colors.white,

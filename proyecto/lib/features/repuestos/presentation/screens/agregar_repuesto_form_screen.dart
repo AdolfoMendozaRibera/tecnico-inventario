@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../auth/providers/auth_provider.dart';
 import 'agregar_repuesto_preview_screen.dart';
 
 /// Pantalla 1 del Flujo v0.4 — "Nuevo Repuesto (Ingreso directo al inventario del taller)"
@@ -135,7 +137,7 @@ class _AgregarRepuestoFormScreenState extends State<AgregarRepuestoFormScreen> {
                         const Icon(Icons.person_outline_rounded, size: 14, color: AppColors.slate500),
                         const SizedBox(width: 4),
                         Text(
-                          'Carlos (Técnico)',
+                          context.watch<AuthProvider>().displayName,
                           style: GoogleFonts.inter(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,

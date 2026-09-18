@@ -89,7 +89,7 @@ class DisponibleCard extends StatelessWidget {
 
                       // Stock disponible
                       Text(
-                        'Stock: 1 unidad en taller',
+                        'Stock: ${repuesto.cantidad} ${repuesto.cantidad == 1 ? "unidad" : "unidades"} en taller',
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           color: const Color(0xFF64748B),

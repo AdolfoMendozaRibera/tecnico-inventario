@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../repuestos/data/repuesto_model.dart';
@@ -44,8 +45,8 @@ class _MarcarUsadoSheetState extends State<MarcarUsadoSheet> {
     if (!mounted) return;
     Navigator.pop(context);
     if (exito) {
-      final u = _cantidad != 1 ? 'es' : '';
-      final msg = '$_cantidad unidad$u marcada${_cantidad != 1 ? 's' : ''} como usada${_cantidad != 1 ? 's' : ''} con éxito';
+      HapticFeedback.lightImpact();
+      const msg = 'Reserva completada: repuesto usado con éxito';
       widget.onConfirmar(msg);
     }
   }

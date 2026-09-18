@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../repuestos/data/repuesto_model.dart';
@@ -44,6 +45,7 @@ class _LiberarRepuestoSheetState extends State<LiberarRepuestoSheet> {
     if (!mounted) return;
     Navigator.pop(context);
     if (exito) {
+      HapticFeedback.lightImpact();
       final liberacionTotal = _quedaraReservado <= 0;
       final msg = liberacionTotal
           ? 'Repuesto liberado y devuelto al taller como disponible'

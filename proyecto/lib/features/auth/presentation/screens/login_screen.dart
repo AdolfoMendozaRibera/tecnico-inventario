@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/supabase_client.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../providers/auth_provider.dart';
 
+/// Pantalla de Autenticación Oficial — VaultTecno
+/// Incluye isotipo de la marca, selector de rol para evaluación (Técnico vs Admin)
+/// y cumplimiento estricto de la escala tipográfica y paleta de colores.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -13,10 +17,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _isLoading = false;
+  final _emailController = TextEditingController(text: 'carlos.tecnico@taller.com');
+  final _passwordController = TextEditingController(text: '123456');
   bool _obscurePassword = true;
+  UserRole _selectedRole = UserRole.empleado;
 
   @override
   void dispose() {
@@ -25,224 +29,293 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void _onRoleChanged(UserRole role) {
+    setState(() {
+      _selectedRole = role;
+      if (role == UserRole.admin) {
+        _emailController.text = 'admin.taller@taller.com';
+      } else {
+        _emailController.text = 'carlos.tecnico@taller.com';
+      }
+    });
+  }
+
+  Future<void> _ejecutarLogin() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, ingresa tu correo y contraseña.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    final authProvider = context.read<AuthProvider>();
+    final exito = await authProvider.signIn(
+      email,
+      password,
+      preferredRole: _selectedRole,
+    );
+
+    if (!mounted) return;
+
+    if (exito) {
+      context.go('/');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? 'Error al iniciar sesión.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final bool isLoading = authProvider.isLoading;
+
     return Scaffold(
-      backgroundColor: AppColors.loginBackground,
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                // Ícono central con aura celeste suave
-                Center(
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: const BoxDecoration(
-                      color: AppColors.loginAura,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.memory_rounded,
-                        size: 50,
-                        color: AppColors.loginButtonBg,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 28),
-                
-                // Título
-                Text(
-                  'Taller Electrónico',
-                  style: GoogleFonts.inter(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.loginTitle,
-                    letterSpacing: -0.5,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                
-                // Subtítulo
-                Text(
-                  'Gestión de Inventario y Reservas',
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    color: AppColors.loginSubtitle,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 36),
-                
-                // Campo Correo Electrónico
-                TextField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    color: AppColors.loginTitle,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Correo Electrónico',
-                    hintStyle: GoogleFonts.inter(
-                      color: AppColors.loginSubtitle,
-                      fontSize: 15,
-                    ),
-                    isDense: true,
-                    prefixIcon: const Icon(
-                      Icons.mail_outline_rounded,
-                      color: AppColors.loginSubtitle,
-                      size: 22,
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: AppColors.loginInputBorder,
-                        width: 1.5,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: AppColors.loginButtonBg,
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                // Campo Contraseña
-                TextField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    color: AppColors.loginTitle,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Contraseña',
-                    hintStyle: GoogleFonts.inter(
-                      color: AppColors.loginSubtitle,
-                      fontSize: 15,
-                    ),
-                    isDense: true,
-                    prefixIcon: const Icon(
-                      Icons.lock_outline_rounded,
-                      color: AppColors.loginSubtitle,
-                      size: 22,
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        color: AppColors.loginSubtitle,
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: AppColors.loginInputBorder,
-                        width: 1.5,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: AppColors.loginButtonBg,
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                
-                // Botón Ingresar
-                SizedBox(
-                  height: 54,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _login,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.loginButtonBg,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : Text(
-                            'Ingresar',
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // ─── LOGO OFICIAL VAULTTECNO ─────────────────────────────
+                  Center(
+                    child: Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.25),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
                           ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                
-                // Enlace "¿Olvidaste tu contraseña?"
-                TextButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Contacta al administrador del taller para restablecer tu acceso.',
+                        ],
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xFF334155), // Slate 700
+                            Color(0xFF0F172A), // Slate 900
+                          ],
                         ),
                       ),
-                    );
-                  },
-                  child: Text(
-                    '¿Olvidaste tu contraseña?',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.loginSubtitle,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          // Acento ámbar de seguridad/bóveda
+                          Positioned(
+                            top: 14,
+                            right: 14,
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: AppColors.secondary,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.shield_rounded,
+                            size: 42,
+                            color: Colors.white,
+                          ),
+                          const Positioned(
+                            child: Icon(
+                              Icons.lock_rounded,
+                              size: 18,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-                ),
+                  const SizedBox(height: 20),
+
+                  // ─── TÍTULO Y SUBTÍTULO VAULTTECNO ────────────────────────
+                  Text(
+                    'VaultTecno',
+                    style: GoogleFonts.inter(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textNight,
+                      letterSpacing: -0.6,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Gestión de Inventario y Control de Taller',
+                    style: AppTextStyles.caption(color: AppColors.slate500),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 28),
+
+                  // ─── SELECTOR DE ROL PARA EVALUACIÓN (Capa 0) ─────────────
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: AppColors.slate100,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppColors.slate200),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _RoleTabButton(
+                            label: 'Técnico',
+                            icon: Icons.handyman_outlined,
+                            isSelected: _selectedRole == UserRole.empleado,
+                            onTap: () => _onRoleChanged(UserRole.empleado),
+                          ),
+                        ),
+                        Expanded(
+                          child: _RoleTabButton(
+                            label: 'Encargado (Admin)',
+                            icon: Icons.admin_panel_settings_outlined,
+                            isSelected: _selectedRole == UserRole.admin,
+                            onTap: () => _onRoleChanged(UserRole.admin),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // ─── CAMPO: CORREO ELECTRÓNICO ────────────────────────────
+                  Text(
+                    'Correo Electrónico',
+                    style: AppTextStyles.labelOverline(color: AppColors.slate700),
+                  ),
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    style: AppTextStyles.body(color: AppColors.textNight),
+                    decoration: const InputDecoration(
+                      hintText: 'ejemplo@taller.com',
+                      prefixIcon: Icon(
+                        Icons.mail_outline_rounded,
+                        color: AppColors.slate400,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // ─── CAMPO: CONTRASEÑA ────────────────────────────────────
+                  Text(
+                    'Contraseña',
+                    style: AppTextStyles.labelOverline(color: AppColors.slate700),
+                  ),
+                  const SizedBox(height: 6),
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    style: AppTextStyles.body(color: AppColors.textNight),
+                    decoration: InputDecoration(
+                      hintText: '••••••••',
+                      prefixIcon: const Icon(
+                        Icons.lock_outline_rounded,
+                        color: AppColors.slate400,
+                        size: 20,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: AppColors.slate400,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // ─── BOTÓN PRINCIPAL INGRESAR ─────────────────────────────
+                  SizedBox(
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: isLoading ? null : _ejecutarLogin,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: isLoading
+                          ? const SizedBox(
+                              height: 22,
+                              width: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.white,
+                              ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.login_rounded, size: 20),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Ingresar a VaultTecno',
+                                  style: AppTextStyles.button(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // ─── AYUDA / RECUPERACIÓN ─────────────────────────────────
+                  Center(
+                    child: TextButton(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Contacta al encargado del taller para restablecer o solicitar credenciales.',
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        '¿Olvidaste tu contraseña?',
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.slate500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -250,39 +323,65 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+}
 
-  Future<void> _login() async {
-    setState(() => _isLoading = true);
-    try {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text;
-      final supabase = SupabaseService.client;
-      
-      AuthResponse res;
-      try {
-        res = await supabase.auth.signInWithPassword(email: email, password: password);
-      } catch (e) {
-        // Registro automático para MVP
-        res = await supabase.auth.signUp(email: email, password: password);
-        
-        if (res.user != null) {
-          await supabase.from('tecnico').insert({
-            'id': res.user!.id,
-            'nombre': email.split('@')[0],
-            'tienda_id': '00000000-0000-0000-0000-000000000001'
-          });
-        }
-      }
+class _RoleTabButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
 
-      if (mounted) context.go('/');
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
+  const _RoleTabButton({
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: isSelected
+              ? Border.all(color: AppColors.slate200, width: 1.2)
+              : null,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected ? AppColors.primary : AppColors.slate400,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? AppColors.textNight : AppColors.slate500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -8,21 +8,34 @@ import '../../../inicio/presentation/screens/inicio_screen.dart';
 import '../../../repuestos/presentation/screens/repuestos_list_screen.dart';
 import '../../../reservas/presentation/screens/mis_reservas_screen.dart';
 
+import '../../providers/navigation_provider.dart';
+
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  /// Tab index to open on first render.
+  /// 0 = Inicio, 1 = Repuestos (Inventario), 2 = Reservas (Mis Reservas)
+  final int initialTab;
+
+  const MainScreen({super.key, this.initialTab = 0});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
-
   @override
   void initState() {
     super.initState();
+    if (widget.initialTab != 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<NavigationProvider>().setTab(widget.initialTab);
+        }
+      });
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<RepuestosProvider>().fetchRepuestos();
+      if (mounted) {
+        context.read<RepuestosProvider>().fetchRepuestos();
+      }
     });
   }
 
@@ -34,8 +47,10 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentTab = context.watch<NavigationProvider>().currentIndex;
+
     return Scaffold(
-      body: _screens[_currentIndex],
+      body: _screens[currentTab],
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -83,11 +98,9 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
           child: NavigationBar(
-            selectedIndex: _currentIndex,
+            selectedIndex: currentTab,
             onDestinationSelected: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
+              context.read<NavigationProvider>().setTab(index);
             },
             destinations: const [
               NavigationDestination(

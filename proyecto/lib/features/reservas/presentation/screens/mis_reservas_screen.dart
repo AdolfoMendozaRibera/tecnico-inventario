@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../auth/providers/auth_provider.dart';
+import '../../../home/providers/navigation_provider.dart';
 import '../../../repuestos/providers/repuestos_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/reservation_card.dart';
@@ -16,6 +18,9 @@ class MisReservasScreen extends StatefulWidget {
 class _MisReservasScreenState extends State<MisReservasScreen> {
   final _searchController = TextEditingController();
   String _searchQuery = '';
+
+  /// 0 = Mis Reservas, 1 = Reservas del Taller (solo para admin)
+  int _adminTab = 0;
 
   /// Mensaje de éxito a mostrar como banner verde en la parte superior.
   /// null = no mostrar banner.
@@ -49,6 +54,10 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final isAdmin = authProvider.isAdmin;
+    final currentUserId = authProvider.currentUser?.id;
+
     return Scaffold(
       backgroundColor: AppColors.slate50,
       appBar: AppBar(
@@ -56,7 +65,7 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         title: Text(
-          'Mis Reservas',
+          isAdmin && _adminTab == 1 ? 'Reservas del Taller' : 'Mis Reservas',
           style: GoogleFonts.inter(
             fontWeight: FontWeight.w700,
             fontSize: 20,
@@ -68,7 +77,8 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
       body: SafeArea(
         child: Consumer<RepuestosProvider>(
           builder: (context, provider, child) {
-            final repuestos = provider.misReservas;
+            final isViewingAll = isAdmin && _adminTab == 1;
+            final repuestos = isViewingAll ? provider.reservados : provider.misReservas;
             final int count = repuestos.length;
 
             if (provider.isLoading) {
@@ -83,11 +93,43 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
               return r.nombre.toLowerCase().contains(query) ||
                   r.categoria.toLowerCase().contains(query) ||
                   (r.equipoDestino ?? '').toLowerCase().contains(query) ||
-                  (r.motivo ?? '').toLowerCase().contains(query);
+                  (r.motivo ?? '').toLowerCase().contains(query) ||
+                  (r.reservadoPorNombre ?? '').toLowerCase().contains(query);
             }).toList();
 
             return Column(
               children: [
+                // ─── Selector de Vista para Administradores ───────────────────
+                if (isAdmin)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE2E8F0),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: _buildAdminTabButton(
+                              label: 'Mis Reservas (${provider.misReservas.length})',
+                              isSelected: _adminTab == 0,
+                              onTap: () => setState(() => _adminTab = 0),
+                            ),
+                          ),
+                          Expanded(
+                            child: _buildAdminTabButton(
+                              label: 'Taller (${provider.reservados.length})',
+                              isSelected: _adminTab == 1,
+                              onTap: () => setState(() => _adminTab = 1),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
                 // ─── Banner verde de éxito (auto-hide) ───────────────────────
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
@@ -95,17 +137,32 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                       ? Container(
                           key: const ValueKey('banner'),
                           width: double.infinity,
-                          margin: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                          margin: const EdgeInsets.fromLTRB(16, 4, 16, 8),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
+                              horizontal: 14, vertical: 12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF10B981),
+                            color: const Color(0xFF10B981), // Verde Esmeralda Figma
                             borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF10B981).withValues(alpha: 0.25),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.check_circle_outline_rounded,
-                                  color: Colors.white, size: 18),
+                              Container(
+                                width: 22,
+                                height: 22,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.25),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.check_rounded,
+                                    color: Colors.white, size: 15),
+                              ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
@@ -121,7 +178,7 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                                 onTap: () =>
                                     setState(() => _bannerMensaje = null),
                                 child: const Icon(Icons.close_rounded,
-                                    color: Colors.white, size: 18),
+                                    color: Colors.white70, size: 18),
                               ),
                             ],
                           ),
@@ -135,15 +192,19 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                     color: AppColors.slate800,
                     onRefresh: () => provider.fetchRepuestos(),
                     child: ListView(
-                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
                       children: [
                         // Subtítulo dinámico
                         Padding(
                           padding: const EdgeInsets.only(bottom: 12, left: 2),
                           child: Text(
-                            count == 0
-                                ? 'No tienes repuestos pendientes por usar'
-                                : 'Tienes $count repuesto${count != 1 ? 's' : ''} reservado${count != 1 ? 's' : ''} listo${count != 1 ? 's' : ''} para usar',
+                            isViewingAll
+                                ? (count == 0
+                                    ? 'No hay repuestos reservados en el taller'
+                                    : 'Hay $count repuesto${count != 1 ? 's' : ''} reservado${count != 1 ? 's' : ''} en todo el taller')
+                                : (count == 0
+                                    ? 'No tienes repuestos pendientes por usar'
+                                    : 'Tienes $count repuesto${count != 1 ? 's' : ''} reservado${count != 1 ? 's' : ''} listo${count != 1 ? 's' : ''} para usar'),
                             style: GoogleFonts.inter(
                               fontSize: 13,
                               color: AppColors.slate500,
@@ -161,7 +222,9 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                             style: GoogleFonts.inter(
                                 fontSize: 14, color: AppColors.slate900),
                             decoration: InputDecoration(
-                              hintText: 'Buscar en mis reservas...',
+                              hintText: isViewingAll
+                                  ? 'Buscar por pieza, equipo o técnico...'
+                                  : 'Buscar en mis reservas...',
                               hintStyle: GoogleFonts.inter(
                                   color: AppColors.slate400, fontSize: 14),
                               prefixIcon: const Icon(Icons.search_rounded,
@@ -224,7 +287,9 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 Text(
-                                  '¡Todo al día!',
+                                  isViewingAll
+                                      ? '¡Todo el taller al día!'
+                                      : '¡Todo al día!',
                                   style: GoogleFonts.inter(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
@@ -233,7 +298,9 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  'Has marcado y consumido todos los repuestos\nque tenías reservados para tus trabajos.',
+                                  isViewingAll
+                                      ? 'No hay repuestos reservados actualmente en el inventario del taller.'
+                                      : 'Has marcado y consumido todos los repuestos\nque tenías reservados para tus trabajos.',
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.inter(
                                     fontSize: 13,
@@ -243,7 +310,9 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                                 ),
                                 const SizedBox(height: 20),
                                 ElevatedButton.icon(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    context.read<NavigationProvider>().setTab(1);
+                                  },
                                   icon: const Icon(Icons.search_rounded,
                                       size: 16),
                                   label: const Text('Ir al Catálogo de Repuestos'),
@@ -283,12 +352,13 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                         // Lista de tarjetas — tap abre GestionarReservaSheet
                         if (filtered.isNotEmpty)
                           ...filtered.map((repuesto) {
+                            final isOwn = repuesto.reservadoPor == currentUserId;
                             return GestureDetector(
                               onTap: () =>
                                   _abrirGestionSheet(context, repuesto),
                               child: ReservationCard(
                                 repuesto: repuesto,
-                                isMiReserva: true,
+                                isMiReserva: isOwn,
                                 useRedLiberarButton: true,
                                 onMarcarUsado: () =>
                                     _abrirGestionSheet(context, repuesto),
@@ -301,35 +371,44 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
                         // Sección CTA "¿Necesitas otro repuesto?"
                         if (repuestos.isNotEmpty) ...[
                           const SizedBox(height: 12),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: AppColors.slate50,
+                          Material(
+                            color: AppColors.slate50,
+                            borderRadius: BorderRadius.circular(16),
+                            child: InkWell(
+                              onTap: () {
+                                context.read<NavigationProvider>().setTab(1);
+                              },
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                  color: AppColors.slate200, width: 1.5),
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  '¿Necesitas otro repuesto?',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.slate900,
-                                  ),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                      color: AppColors.slate200, width: 1.5),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Busca en la pestaña Repuestos →',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 13,
-                                    color: const Color(0xFF1E3A5F),
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      '¿Necesitas otro repuesto?',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.slate900,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Busca en la pestaña Repuestos →',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13,
+                                        color: const Color(0xFF1E3A5F),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
                         ],
@@ -340,6 +419,43 @@ class _MisReservasScreenState extends State<MisReservasScreen> {
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdminTabButton({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ]
+              : null,
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              color: isSelected ? AppColors.slate900 : AppColors.slate500,
+            ),
+          ),
         ),
       ),
     );

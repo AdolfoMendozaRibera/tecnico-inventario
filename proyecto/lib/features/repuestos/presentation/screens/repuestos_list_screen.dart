@@ -9,6 +9,8 @@ import '../widgets/inventario_reservado_card.dart';
 import '../widgets/detalle_reserva_sheet.dart';
 import '../widgets/repuesto_skeleton_card.dart';
 import '../widgets/repuesto_empty_state.dart';
+import '../widgets/inventario_error_state.dart';
+import '../widgets/taller_vacio_state.dart';
 import '../../../reservas/presentation/screens/reservar_screen.dart';
 import 'agregar_repuesto_form_screen.dart';
 
@@ -90,17 +92,25 @@ class RepuestosListScreen extends StatelessWidget {
               ),
             ),
             body: provider.isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.slate800,
-                    ),
+                // Loading: skeleton list para no causar salto de layout
+                ? ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                    itemCount: 5,
+                    itemBuilder: (_, __) => const RepuestoSkeletonCard(),
                   )
-                : TabBarView(
-                    children: [
-                      _ListaDisponibles(provider.disponibles),
-                      _ListaReservados(provider.reservados),
-                    ],
-                  ),
+                : provider.lastError != null
+                    // Error: banner con mensaje humano + botón Reintentar
+                    ? InventarioErrorState(
+                        message: provider.lastError!,
+                        onRetry: () => context.read<RepuestosProvider>().fetchRepuestos(),
+                      )
+                    // Success: pestañas normales
+                    : TabBarView(
+                        children: [
+                          _ListaDisponibles(provider.disponibles),
+                          _ListaReservados(provider.reservados),
+                        ],
+                      ),
           ),
         );
       },
@@ -268,13 +278,10 @@ class _ListaDisponiblesState extends State<_ListaDisponibles> {
                           },
                           onClearSearch: _limpiarBusqueda,
                         )
-                      : Center(
-                          child: Text(
-                            'No hay repuestos disponibles en el taller',
-                            style: GoogleFonts.inter(
-                              fontSize: 15,
-                              color: const Color(0xFF64748B),
-                              fontWeight: FontWeight.w500,
+                      : TallerVacioState(
+                          onAgregar: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const AgregarRepuestoFormScreen(),
                             ),
                           ),
                         )
@@ -480,16 +487,7 @@ class _ListaReservadosState extends State<_ListaReservados> {
                           },
                           onClearSearch: _limpiarBusqueda,
                         )
-                      : Center(
-                          child: Text(
-                            'No hay repuestos reservados en el taller',
-                            style: GoogleFonts.inter(
-                              fontSize: 15,
-                              color: const Color(0xFF64748B),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        )
+                      : const TallerVacioState(esReservados: true)
                   : RefreshIndicator(
                       color: AppColors.slate800,
                       onRefresh: () => context.read<RepuestosProvider>().fetchRepuestos(),

@@ -62,6 +62,66 @@ class Repuesto {
     );
   }
 
+  /// Obtiene la ubicación física parseada o el valor por defecto del taller
+  String get parsedUbicacion {
+    if (descripcion == null || descripcion!.isEmpty) {
+      return 'Estantería A3 — Nivel 2';
+    }
+    for (final line in descripcion!.split('\n')) {
+      if (line.toLowerCase().startsWith('ubicación:') || line.toLowerCase().startsWith('ubicacion:')) {
+        final val = line.substring(line.indexOf(':') + 1).trim();
+        if (val.isNotEmpty) return val;
+      }
+    }
+    // Si no contiene formato clave-valor pero tiene texto, retornar la descripción
+    if (!descripcion!.contains(':')) {
+      return descripcion!;
+    }
+    return 'Estantería A3 — Nivel 2';
+  }
+
+  /// Obtiene el SKU parseado si existe en los metadatos
+  String? get parsedSku {
+    if (descripcion == null) return null;
+    for (final line in descripcion!.split('\n')) {
+      if (line.toUpperCase().startsWith('SKU:')) {
+        final val = line.substring(4).trim();
+        if (val.isNotEmpty) return val;
+      }
+    }
+    return null;
+  }
+
+  /// Obtiene el estado de la pieza ('Nuevo' | 'Usado / Recupero')
+  String get parsedEstadoPieza {
+    if (descripcion == null) return 'Nuevo';
+    for (final line in descripcion!.split('\n')) {
+      if (line.toLowerCase().startsWith('estado de pieza:')) {
+        final val = line.substring(line.indexOf(':') + 1).trim();
+        if (val.isNotEmpty) return val;
+      }
+    }
+    return 'Nuevo';
+  }
+
+  /// Obtiene las notas o compatibilidad si existen
+  String? get parsedNotas {
+    if (descripcion == null) return null;
+    final buffer = StringBuffer();
+    bool isCollectingNotes = false;
+    for (final line in descripcion!.split('\n')) {
+      if (line.toLowerCase().startsWith('notas:')) {
+        isCollectingNotes = true;
+        final val = line.substring(line.indexOf(':') + 1).trim();
+        if (val.isNotEmpty) buffer.writeln(val);
+      } else if (isCollectingNotes) {
+        buffer.writeln(line);
+      }
+    }
+    final res = buffer.toString().trim();
+    return res.isNotEmpty ? res : null;
+  }
+
   /// Copia con campos modificados, útil para actualizaciones locales de estado.
   Repuesto copyWith({
     String? id,
