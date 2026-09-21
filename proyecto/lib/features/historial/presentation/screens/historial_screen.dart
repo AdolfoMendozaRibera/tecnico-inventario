@@ -506,6 +506,8 @@ class _HistorialScreenState extends State<HistorialScreen> {
 
                     return HistorialEmptyState(
                       tieneFiltros: tieneFiltrosActivos,
+                      searchQuery: historial.searchQuery,
+                      esFiltroPeriodo: historial.periodo != PeriodoFiltro.todo,
                       onLimpiarFiltros: () {
                         _searchController.clear();
                         historial.limpiarFiltros();

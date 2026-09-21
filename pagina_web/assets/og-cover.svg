@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070D1A"/>
+      <stop offset="50%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#050811"/>
+    </linearGradient>
+    <linearGradient id="emerald" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#34D399"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="85%" cy="20%" r="50%">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="15%" cy="85%" r="45%">
+      <stop offset="0%" stop-color="#6366F1" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#6366F1" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Fondo con degradado y glows -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow1)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+
+  <!-- Logo Escudo -->
+  <g transform="translate(100, 110)">
+    <rect width="72" height="72" rx="20" fill="#1E293B" stroke="#334155" stroke-width="2"/>
+    <path d="M36 12L16 20v18c0 14 9.5 27 20 30 10.5-3 20-16 20-30V20L36 12z" fill="#0F172A" stroke="#10B981" stroke-width="3"/>
+    <path d="M26 34l10 10 10-10" stroke="#10B981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="36" cy="28" r="4" fill="#10B981"/>
+  </g>
+
+  <!-- Marca y Badge -->
+  <text x="190" y="156" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="34" font-weight="800" letter-spacing="-0.02em">VaultTecno</text>
+  
+  <g transform="translate(390, 126)">
+    <rect width="140" height="34" rx="17" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.4)" stroke-width="1"/>
+    <circle cx="16" cy="17" r="4" fill="#10B981"/>
+    <text x="28" y="22" fill="#34D399" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">v0.5 Android APK</text>
+  </g>
+
+  <!-- Titular Principal -->
+  <text x="100" y="270" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="900" letter-spacing="-0.03em" line-height="1.1">
+    Control de Inventario y
+  </text>
+  <text x="100" y="335" fill="url(#emerald)" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="900" letter-spacing="-0.03em">
+    Trazabilidad de Repuestos
+  </text>
+
+  <!-- Subtítulo -->
+  <text x="100" y="405" fill="#94A3B8" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="400">
+    Reservas atómicas en tiempo real, gestión ergonómica en mesa y cero piezas perdidas.
+  </text>
+
+  <!-- Features Pills -->
+  <g transform="translate(100, 480)">
+    <rect width="210" height="42" rx="10" fill="#1E293B" stroke="#334155"/>
+    <text x="105" y="26" text-anchor="middle" fill="#E2E8F0" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="600">⚡ Reserva Atómica SQL</text>
+  </g>
+
+  <g transform="translate(330, 480)">
+    <rect width="210" height="42" rx="10" fill="#1E293B" stroke="#334155"/>
+    <text x="105" y="26" text-anchor="middle" fill="#E2E8F0" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="600">📊 Trazabilidad ISO UTC</text>
+  </g>
+
+  <g transform="translate(560, 480)">
+    <rect width="200" height="42" rx="10" fill="#1E293B" stroke="#334155"/>
+    <text x="100" y="26" text-anchor="middle" fill="#E2E8F0" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="600">🛡️ Control de Mermas</text>
+  </g>
+
+  <!-- Mini Mockup Lateral Derecho -->
+  <g transform="translate(860, 95)">
+    <rect width="240" height="440" rx="36" fill="#0B1120" stroke="#334155" stroke-width="4"/>
+    <rect x="80" y="10" width="80" height="16" rx="8" fill="#1E293B"/>
+    <!-- Mockup Card 1 -->
+    <rect x="20" y="50" width="200" height="80" rx="14" fill="#1E293B" stroke="#334155"/>
+    <text x="35" y="80" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">Pantalla AMOLED</text>
+    <text x="35" y="100" fill="#94A3B8" font-family="system-ui, -apple-system, sans-serif" font-size="11">Caja B3 - Estante 2</text>
+    <rect x="145" y="68" width="60" height="22" rx="6" fill="rgba(16,185,129,0.2)"/>
+    <text x="175" y="83" text-anchor="middle" fill="#34D399" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700">4 disp.</text>
+    <!-- Mockup Card 2 -->
+    <rect x="20" y="145" width="200" height="90" rx="14" fill="#0F172A" stroke="rgba(16,185,129,0.4)"/>
+    <text x="35" y="175" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">Reserva Atómica</text>
+    <text x="35" y="195" fill="#34D399" font-family="system-ui, -apple-system, sans-serif" font-size="11">🔒 Confirmada en BD</text>
+    <!-- Mockup Card 3 -->
+    <rect x="20" y="250" width="200" height="75" rx="14" fill="#1E293B" stroke="#334155"/>
+    <text x="35" y="280" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700">Batería BN59 5000mAh</text>
+    <text x="35" y="300" fill="#94A3B8" font-family="system-ui, -apple-system, sans-serif" font-size="11">Uso parcial: 3 de 5</text>
+  </g>
+</svg>

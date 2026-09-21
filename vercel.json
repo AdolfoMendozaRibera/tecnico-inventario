@@ -1,0 +1,19 @@
+{
+  "rewrites": [
+    {
+      "source": "/download",
+      "destination": "/pagina_web/downloads/app-v0.5.apk"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/pagina_web/downloads/(.*)\\.apk",
+      "headers": [
+        {
+          "key": "Content-Disposition",
+          "value": "attachment"
+        }
+      ]
+    }
+  ]
+}

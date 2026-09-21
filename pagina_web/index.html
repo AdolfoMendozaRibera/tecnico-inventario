@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO y Metadata Principal -->
+  <title>VaultTecno — Control de Inventario y Trazabilidad de Repuestos | Descarga APK</title>
+  <meta name="description"
+    content="Gestión inteligente de inventario y reservas atómicas de repuestos en tiempo real para talleres de reparación técnica. Descarga directa del APK demo para Android.">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="VaultTecno Team">
+  <link rel="canonical" href="https://vaulttecno.vercel.app/">
+
+  <!-- Theme Color para Navegadores Móviles -->
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F8FAFC">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#070D1A">
+
+  <!-- Favicon Vectorial SVG -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/favicon.svg">
+
+  <!-- Open Graph (WhatsApp, Telegram, Facebook, LinkedIn) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vaulttecno.vercel.app/">
+  <meta property="og:title" content="VaultTecno — Control de Inventario y Trazabilidad de Repuestos">
+  <meta property="og:description"
+    content="Reservas atómicas en tiempo real, trazabilidad de reparaciones y control de stock sin papel. Descarga directa del APK demo para Android.">
+  <meta property="og:image" content="assets/og-cover.svg">
+  <meta property="og:image:alt"
+    content="Vista previa de VaultTecno: aplicación móvil de control de inventario de repuestos">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:site_name" content="VaultTecno">
+
+  <!-- Twitter Card Metadata -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VaultTecno — Control de Inventario para Talleres">
+  <meta name="twitter:description"
+    content="Reservas atómicas en tiempo real, trazabilidad de repuestos y control de stock. Descarga directa del APK para Android.">
+  <meta name="twitter:image" content="assets/og-cover.svg">
+
+  <!-- Google Fonts: Inter (400 + 600 + 700) con display swap -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Hoja de estilos principal -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+  <!-- Enlace accesible de salto al contenido principal (WCAG 2.1 AA) -->
+  <a href="#hero" class="skip-link">Saltar al contenido principal</a>
+
+  <!-- =====================================================================
+       RF-01 — NAVBAR (sticky, glassmorphism, hamburguesa accesible)
+       ===================================================================== -->
+  <header class="header" id="navbar" role="banner">
+    <div class="container header__inner">
+
+      <!-- Marca -->
+      <a href="#hero" class="brand" aria-label="VaultTecno — ir al inicio">
+        <span class="brand__logo" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="9" fill="#0F172A" />
+            <path d="M16 4L6 8v8c0 6.4 4.3 12.4 10 14 5.7-1.6 10-7.6 10-14V8L16 4z" fill="#1E293B" stroke="#10B981"
+              stroke-width="1.4" />
+            <circle cx="16" cy="12" r="2.2" fill="#10B981" />
+            <path d="M12 16l4 4 4-4" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              fill="none" />
+          </svg>
+        </span>
+        <span class="brand__name">VaultTecno</span>
+      </a>
+
+      <!-- Navegación Desktop -->
+      <nav class="nav" id="primary-nav" aria-label="Navegación principal">
+        <ul class="nav__list" role="list">
+          <li><a href="#problema" class="nav__link">El Problema</a></li>
+          <li><a href="#como-funciona" class="nav__link">Cómo Funciona</a></li>
+          <li><a href="#credenciales" class="nav__link">Demo</a></li>
+          <li><a href="#detalles-tecnicos" class="nav__link">Stack</a></li>
+          <li><a href="#solicitar-cuenta" class="nav__link">Solicitar Cuenta</a></li>
+          <li><a href="#faq" class="nav__link">FAQ</a></li>
+        </ul>
+      </nav>
+
+      <!-- Acciones -->
+      <div class="header__actions">
+        <a href="#descargar" class="btn btn--primary header__cta" id="nav-download-cta">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Descargar APK
+        </a>
+
+        <!-- Hamburguesa -->
+        <button id="menu-toggle" class="btn-icon btn-menu" type="button" aria-expanded="false"
+          aria-controls="primary-nav" aria-label="Abrir menú de navegación">
+          <svg class="icon-menu" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" aria-hidden="true">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+          <svg class="icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- =====================================================================
+         RF-02 — HERO: above the fold, mobile-first, CTA principal visible
+         ===================================================================== -->
+    <section class="hero" id="hero" aria-label="Presentación de VaultTecno">
+      <!-- Fondo decorativo: gradiente radial y grid pattern -->
+      <div class="hero__bg" aria-hidden="true">
+        <div class="hero__bg-glow hero__bg-glow--1"></div>
+        <div class="hero__bg-glow hero__bg-glow--2"></div>
+        <div class="hero__bg-grid"></div>
+      </div>
+
+      <div class="container hero__container">
+
+        <!-- Contenido textual -->
+        <div class="hero__content">
+          <div class="hero__pill" aria-label="Estado de la versión">
+            <span class="pill__dot" aria-hidden="true"></span>
+            v0.5 Demo &nbsp;·&nbsp; Solo Android
+          </div>
+
+          <h1 class="hero__title">
+            Sabe qué repuestos tienes
+            <span class="hero__title-accent">al instante</span>
+            y sin llamadas
+          </h1>
+
+          <p class="hero__subtitle">
+            Gestión inteligente e inventario en tiempo real para talleres técnicos.
+            Reservas atómicas que eliminan el doble-booking entre técnicos.
+          </p>
+
+          <!-- Stats rápidos -->
+          <div class="hero__stats" aria-label="Indicadores clave">
+            <div class="hero-stat">
+              <span class="hero-stat__value">5</span>
+              <span class="hero-stat__label">Flujos de trabajo</span>
+            </div>
+            <div class="hero-stat__divider" aria-hidden="true"></div>
+            <div class="hero-stat">
+              <span class="hero-stat__value">2</span>
+              <span class="hero-stat__label">Roles de acceso</span>
+            </div>
+            <div class="hero-stat__divider" aria-hidden="true"></div>
+            <div class="hero-stat">
+              <span class="hero-stat__value">0</span>
+              <span class="hero-stat__label">Reservas duplicadas</span>
+            </div>
+          </div>
+
+          <!-- CTAs -->
+          <div class="hero__actions">
+            <a href="#descargar" class="btn btn--primary btn--lg js-download-btn" id="hero-download-btn"
+              aria-label="Descargar APK VaultTecno demo — aproximadamente 24 megabytes">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span>Descargar APK</span>
+              <span class="btn__badge">~24 MB</span>
+            </a>
+            <a href="#como-funciona" class="btn btn--ghost">
+              Ver cómo funciona
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                aria-hidden="true">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </a>
+          </div>
+
+          <p class="hero__disclaimer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            Android 8.0 o superior &nbsp;·&nbsp; Base de datos de prueba
+          </p>
+        </div>
+
+        <!-- Mockup de dispositivo -->
+        <!-- Mockup de dispositivo -->
+        <div class="hero__visual" aria-label="Vista previa de la aplicación">
+          <div class="phone-frame" role="img" aria-label="Captura de la pantalla Inventario del Taller">
+            <div class="phone-frame__notch" aria-hidden="true"></div>
+            <div class="phone-frame__screen">
+              <div class="app" aria-hidden="true">
+
+                <h2 class="app-title">Inventario del Taller</h2>
+
+                <!-- Pestañas -->
+                <div class="app-tabs">
+                  <span class="app-tab app-tab--active">Disponibles (8)</span>
+                  <span class="app-tab">Reservados (3)</span>
+                </div>
+
+                <!-- Buscador -->
+                <div class="app-search">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <span>Buscar repuesto o categoría...</span>
+                </div>
+
+                <!-- Lista -->
+                <div class="app-list">
+
+                  <article class="app-card">
+                    <div class="app-card__top">
+                      <strong class="app-card__name">Memoria RAM 16GB DDR4</strong>
+                      <span class="app-badge">Disponible</span>
+                    </div>
+                    <div class="app-card__cat">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linejoin="round">
+                        <polygon points="2 20 8 9 14 20" />
+                        <circle cx="18" cy="8" r="2.5" />
+                      </svg>
+                      Categoría: Memorias
+                    </div>
+                    <div class="app-card__bottom">
+                      <span class="app-card__stock">Stock: 4 unidades en taller</span>
+                      <button class="app-btn" type="button" tabindex="-1">Reservar</button>
+                    </div>
+                  </article>
+
+                  <article class="app-card">
+                    <div class="app-card__top">
+                      <strong class="app-card__name">Disco SSD 1TB NVMe</strong>
+                      <span class="app-badge">Disponible</span>
+                    </div>
+                    <div class="app-card__cat">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linejoin="round">
+                        <polygon points="2 20 8 9 14 20" />
+                        <circle cx="18" cy="8" r="2.5" />
+                      </svg>
+                      Categoría: Almacenamiento
+                    </div>
+                    <div class="app-card__bottom">
+                      <span class="app-card__stock">Stock: 2 unidades en taller</span>
+                      <button class="app-btn" type="button" tabindex="-1">Reservar</button>
+                    </div>
+                  </article>
+
+                  <article class="app-card">
+                    <div class="app-card__top">
+                      <strong class="app-card__name">Teclado Dell Inspiron 15</strong>
+                      <span class="app-badge">Disponible</span>
+                    </div>
+                    <div class="app-card__cat">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linejoin="round">
+                        <polygon points="2 20 8 9 14 20" />
+                        <circle cx="18" cy="8" r="2.5" />
+                      </svg>
+                      Categoría: Teclados
+                    </div>
+                    <div class="app-card__bottom">
+                      <span class="app-card__stock">Stock: 1 unidad en taller</span>
+                      <button class="app-btn" type="button" tabindex="-1">Reservar</button>
+                    </div>
+                  </article>
+
+                </div>
+
+                <!-- Navegación inferior -->
+                <nav class="app-nav">
+                  <span class="app-nav__item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                    </svg>
+                    Inicio
+                  </span>
+                  <span class="app-nav__item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="16" rx="2.5" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                    Repuestos
+                  </span>
+                  <span class="app-nav__item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                    </svg>
+                    Reservas
+                  </span>
+                  <span class="app-nav__item app-nav__item--active">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Historial
+                  </span>
+                </nav>
+
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div><!-- /.hero__container -->
+    </section>
+
+    <!-- =====================================================================
+         Franja de confianza (logos de tecnologías / trust bar)
+         ===================================================================== -->
+    <div class="trust-bar" aria-label="Tecnologías utilizadas">
+      <div class="container trust-bar__inner">
+        <span class="trust-bar__label">Construido con</span>
+        <ul class="trust-bar__list" role="list">
+          <li class="trust-bar__item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              aria-hidden="true">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg>
+            Flutter 3.x
+          </li>
+          <li class="trust-bar__sep" aria-hidden="true">·</li>
+          <li class="trust-bar__item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              aria-hidden="true">
+              <ellipse cx="12" cy="5" rx="9" ry="3" />
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+            </svg>
+            Supabase / PostgreSQL
+          </li>
+          <li class="trust-bar__sep" aria-hidden="true">·</li>
+          <li class="trust-bar__item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            Row Level Security
+          </li>
+          <li class="trust-bar__sep" aria-hidden="true">·</li>
+          <li class="trust-bar__item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+              aria-hidden="true">
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+            Dart 3 / Provider
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         RF-03 — EL PROBLEMA: 3 tarjetas con ícono, frase + data visual
+         ===================================================================== -->
+    <section class="section" id="problema" aria-labelledby="problema-title">
+      <div class="container">
+        <header class="section__header">
+          <span class="section__eyebrow">El desafío en el taller</span>
+          <h2 class="section__title" id="problema-title">
+            El caos de stock que frena<br class="br-md"> a tu equipo todos los días
+          </h2>
+          <p class="section__desc">
+            En un taller con varios técnicos, el inventario sin sincronización digital
+            genera fricciones costosas y pérdidas invisibles.
+          </p>
+        </header>
+
+        <div class="problem-grid">
+
+          <article class="problem-card" aria-labelledby="prob-1-title">
+            <div class="problem-card__icon-wrap problem-card__icon-wrap--red" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+            </div>
+            <div class="problem-card__body">
+              <h3 class="problem-card__title" id="prob-1-title">Reservas duplicadas</h3>
+              <p class="problem-card__text">
+                Dos técnicos intentan usar la misma pantalla para clientes distintos al mismo tiempo.
+                Sin un sistema que bloquee atómicamente el stock, los conflictos son inevitables.
+              </p>
+            </div>
+            <div class="problem-card__vs" aria-label="Solución VaultTecno">
+              <span class="problem-card__vs-label">VaultTecno resuelve:</span>
+              <span class="problem-card__vs-desc">Reserva atómica en BD — solo uno gana</span>
+            </div>
+          </article>
+
+          <article class="problem-card" aria-labelledby="prob-2-title">
+            <div class="problem-card__icon-wrap problem-card__icon-wrap--amber" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </div>
+            <div class="problem-card__body">
+              <h3 class="problem-card__title" id="prob-2-title">Piezas sin trazabilidad</h3>
+              <p class="problem-card__text">
+                Repuestos que salen de estantería sin saber en qué equipo o para qué cliente se instalaron.
+                La factura no cierra y los datos de calidad se pierden.
+              </p>
+            </div>
+            <div class="problem-card__vs" aria-label="Solución VaultTecno">
+              <span class="problem-card__vs-label">VaultTecno resuelve:</span>
+              <span class="problem-card__vs-desc">Historial completo: técnico, equipo y fecha</span>
+            </div>
+          </article>
+
+          <article class="problem-card" aria-labelledby="prob-3-title">
+            <div class="problem-card__icon-wrap problem-card__icon-wrap--green" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            </div>
+            <div class="problem-card__body">
+              <h3 class="problem-card__title" id="prob-3-title">Mermas no documentadas</h3>
+              <p class="problem-card__text">
+                Flexes rotos, baterías dañadas durante la instalación. Se tiran al cesto sin un reporte formal
+                y el stock real nunca cuadra con el teórico.
+              </p>
+            </div>
+            <div class="problem-card__vs" aria-label="Solución VaultTecno">
+              <span class="problem-card__vs-label">VaultTecno resuelve:</span>
+              <span class="problem-card__vs-desc">Flujo de baja auditado con motivo obligatorio</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         RF-08 — BENEFICIOS: resultado para el dueño del taller
+         ===================================================================== -->
+    <section class="section benefits-section" id="beneficios" aria-labelledby="benefits-title">
+      <div class="container">
+        <header class="section__header">
+          <span class="section__eyebrow">Resultado para el negocio</span>
+          <h2 class="section__title" id="benefits-title">
+            Menos llamadas. Cero piezas perdidas.<br class="br-md"> Control total desde el celular.
+          </h2>
+        </header>
+
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+            </div>
+            <h3 class="benefit-card__title">Agilidad en mesa de trabajo</h3>
+            <p class="benefit-card__text">
+              El técnico aparta piezas en 3 toques, sin interrumpir ni llamar al encargado.
+            </p>
+          </div>
+
+          <div class="benefit-card benefit-card--featured">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <polyline points="9 12 11 14 15 10" />
+              </svg>
+            </div>
+            <h3 class="benefit-card__title">Cero doble reserva garantizado</h3>
+            <p class="benefit-card__text">
+              El servidor bloquea atómicamente el repuesto. Solo un técnico logra apartarlo en cada momento.
+            </p>
+          </div>
+
+          <div class="benefit-card">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+            </div>
+            <h3 class="benefit-card__title">Auditoría y calidad reales</h3>
+            <p class="benefit-card__text">
+              Sabe exactamente qué técnico instaló cada componente y en qué equipo del cliente.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         RF-04 — CÓMO FUNCIONA: Los 5 flujos reales de VaultTecno (Solo Texto)
+         ===================================================================== -->
+    <section class="section section--dark flows-section" id="como-funciona" aria-labelledby="flows-title">
+      <div class="container">
+        <header class="section__header section__header--light">
+          <span class="section__eyebrow section__eyebrow--light">Flujos de trabajo</span>
+          <h2 class="section__title section__title--light" id="flows-title">
+            Cinco flujos diseñados para el taller real
+          </h2>
+          <p class="section__desc section__desc--light">
+            De la estantería al equipo del cliente en 3 toques. Ergonómico y pensado para operar con una sola mano en
+            mesa.
+          </p>
+        </header>
+
+        <div class="flows-grid" role="list" aria-label="Flujos de la aplicación VaultTecno">
+
+          <!-- Flujo 1 -->
+          <article class="flow-card" role="listitem" aria-labelledby="flow-1-title">
+            <div class="flow-card__header">
+              <span class="flow-card__badge">Flujo 01</span>
+              <span class="flow-card__role">Técnico &amp; Encargado</span>
+            </div>
+
+            <div class="flow-card__content">
+              <h3 class="flow-card__title" id="flow-1-title">Búsqueda y catálogo en vivo</h3>
+              <p class="flow-card__benefit">Encuentra cualquier repuesto en menos de 3 segundos.</p>
+              <p class="flow-card__text">
+                Búsqueda en tiempo real con debounce, filtros instantáneos por estado y ficha técnica con ubicación
+                física exacta en taller.
+              </p>
+            </div>
+
+            <div class="flow-card__tags">
+              <span class="flow-tag">Debounce en vivo</span>
+              <span class="flow-tag">Filtro de estados</span>
+              <span class="flow-tag">Ubicación física</span>
+            </div>
+          </article>
+
+          <!-- Flujo 2 -->
+          <article class="flow-card flow-card--featured" role="listitem" aria-labelledby="flow-2-title">
+            <div class="flow-card__header">
+              <span class="flow-card__badge flow-card__badge--emerald">Flujo 02</span>
+              <span class="flow-card__role flow-card__role--emerald">Online-Only · Atómico</span>
+            </div>
+
+            <div class="flow-card__content">
+              <h3 class="flow-card__title" id="flow-2-title">Reserva atómica en servidor</h3>
+              <p class="flow-card__benefit">Cero piezas duplicadas: validación directa en base de datos.</p>
+              <p class="flow-card__text">
+                Al apartar una pieza, una mutación atómica bloquea la fila en Supabase. Si dos técnicos intentan
+                reservarla al mismo tiempo, el sistema previene la colisión.
+              </p>
+            </div>
+
+            <div class="flow-card__tags">
+              <span class="flow-tag">Atomic DB Mutation</span>
+              <span class="flow-tag">Anti-race condition</span>
+              <span class="flow-tag">Respuesta háptica</span>
+            </div>
+          </article>
+
+          <!-- Flujo 3 -->
+          <article class="flow-card" role="listitem" aria-labelledby="flow-3-title">
+            <div class="flow-card__header">
+              <span class="flow-card__badge">Flujo 03</span>
+              <span class="flow-card__role">Técnico &amp; Taller</span>
+            </div>
+
+            <div class="flow-card__content">
+              <h3 class="flow-card__title" id="flow-3-title">Gestión de reservas y uso parcial</h3>
+              <p class="flow-card__benefit">Reserva 5, instala 3 y libera 2 al taller en un toque.</p>
+              <p class="flow-card__text">
+                Operaciones parciales por cantidad. Los repuestos sobrantes regresan de inmediato al catálogo general
+                sin trámites.
+              </p>
+            </div>
+
+            <div class="flow-card__tags">
+              <span class="flow-tag">Uso parcial</span>
+              <span class="flow-tag">Liberación inmediata</span>
+              <span class="flow-tag">Vista global Admin</span>
+            </div>
+          </article>
+
+          <!-- Flujo 4 -->
+          <article class="flow-card" role="listitem" aria-labelledby="flow-4-title">
+            <div class="flow-card__header">
+              <span class="flow-card__badge">Flujo 04</span>
+              <span class="flow-card__role">Control de Calidad</span>
+            </div>
+
+            <div class="flow-card__content">
+              <h3 class="flow-card__title" id="flow-4-title">CRUD maestro y baja por daño</h3>
+              <p class="flow-card__benefit">Toda merma o flex dañado queda auditado con motivo obligatorio.</p>
+              <p class="flow-card__text">
+                Alta rápida de repuestos, edición táctil de datos maestros y flujo protegido de baja por daño para
+                control de mermas real.
+              </p>
+            </div>
+
+            <div class="flow-card__tags">
+              <span class="flow-tag">CRUD de piezas</span>
+              <span class="flow-tag">Motivo obligatorio</span>
+              <span class="flow-tag">Control de mermas</span>
+            </div>
+          </article>
+
+          <!-- Flujo 5 -->
+          <article class="flow-card" role="listitem" aria-labelledby="flow-5-title">
+            <div class="flow-card__header">
+              <span class="flow-card__badge">Flujo 05</span>
+              <span class="flow-card__role">Auditoría &amp; Supervisión</span>
+            </div>
+
+            <div class="flow-card__content">
+              <h3 class="flow-card__title" id="flow-5-title">Historial y trazabilidad total</h3>
+              <p class="flow-card__benefit">Sabrás exactamente qué técnico instaló cada repuesto y cuándo.</p>
+              <p class="flow-card__text">
+                Micro-KPIs de rendimiento, filtros por período y filtro por técnico responsable. Registro inalterable
+                con marcas de tiempo ISO UTC.
+              </p>
+            </div>
+
+            <div class="flow-card__tags">
+              <span class="flow-tag">Micro-KPIs</span>
+              <span class="flow-tag">Filtro por técnico</span>
+              <span class="flow-tag">Timestamp ISO UTC</span>
+            </div>
+          </article>
+
+        </div><!-- /.flows-grid -->
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         RF-06 — DESCARGA E INSTALACIÓN (sección crítica sin QR)
+         ===================================================================== -->
+    <section class="section section--subtle" id="descargar" aria-labelledby="download-title">
+      <div class="container">
+        <header class="section__header">
+          <span class="section__eyebrow">Distribución directa</span>
+          <h2 class="section__title" id="download-title">Instala VaultTecno en tu Android</h2>
+          <p class="section__desc">
+            Descarga directa en 1 clic. Sigue la guía de 4 pasos para instalar el APK en segundos sin Play Store.
+          </p>
+        </header>
+
+        <div class="download-layout download-layout--centered">
+
+          <!-- Tarjeta principal de descarga -->
+          <div class="download-card download-card--full">
+
+            <div class="download-card__main">
+              <!-- CTA de descarga principal -->
+              <div class="download-card__cta">
+                <a href="downloads/vaulttecno-v0.5.apk" class="btn btn--primary btn--lg js-download-btn"
+                  id="section-download-btn" download aria-label="Descargar archivo APK de VaultTecno versión 0.5">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  <span>Descargar APK VaultTecno</span>
+                  <span class="btn__badge">v0.5.0-demo</span>
+                </a>
+
+                <p class="download-card__safe-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2"
+                    aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <polyline points="9 12 11 14 15 10" />
+                  </svg>
+                  APK firmado y verificado para demostración
+                </p>
+
+                <!-- Ficha técnica rápida -->
+                <dl class="download-specs">
+                  <div class="download-specs__item">
+                    <dt>Versión</dt>
+                    <dd>0.5.0-demo</dd>
+                  </div>
+                  <div class="download-specs__item">
+                    <dt>Tamaño</dt>
+                    <dd>~24 MB (23.6 MB)</dd>
+                  </div>
+                  <div class="download-specs__item">
+                    <dt>Android</dt>
+                    <dd>8.0+ (API 26+)</dd>
+                  </div>
+                  <div class="download-specs__item">
+                    <dt>Arquitectura</dt>
+                    <dd>ARM64 / ARMv7</dd>
+                  </div>
+                </dl>
+
+                <!-- SHA-256 Hash box -->
+                <div class="download-hash">
+                  <div class="download-hash__info">
+                    <span class="download-hash__label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        aria-hidden="true">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                      </svg>
+                      SHA-256 Hash:
+                    </span>
+                    <code id="apk-hash">F83EDFCE1B71C23807A7D96CD3EFCCCD00B4BC57F0074667EEE0D9962308C265</code>
+                  </div>
+                  <button class="btn-inline-copy" data-copy-target="apk-hash" type="button"
+                    aria-label="Copiar hash SHA-256">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span>Copiar</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Guía de instalación numerada en 4 pasos -->
+              <div class="install-guide">
+                <h3 class="install-guide__title">Guía de instalación en 4 pasos</h3>
+
+                <div class="install-steps-grid">
+                  <div class="install-step-card">
+                    <span class="install-step-card__num">1</span>
+                    <div class="install-step-card__body">
+                      <strong>Descarga el archivo APK</strong>
+                      <p>Pulsa el botón superior. El archivo <code>vaulttecno-v0.5.apk</code> se guardará en tu carpeta
+                        de Descargas.</p>
+                    </div>
+                  </div>
+
+                  <div class="install-step-card">
+                    <span class="install-step-card__num">2</span>
+                    <div class="install-step-card__body">
+                      <strong>Abre la descarga</strong>
+                      <p>Toca la notificación de descarga finalizada o accede a la app <em>Archivos / Descargas</em> de
+                        tu teléfono.</p>
+                    </div>
+                  </div>
+
+                  <div class="install-step-card">
+                    <span class="install-step-card__num">3</span>
+                    <div class="install-step-card__body">
+                      <strong>Habilita orígenes desconocidos</strong>
+                      <p>Si Android lo solicita, pulsa <em>Configuración</em> y activa <em>"Permitir desde esta
+                          fuente"</em> para continuar.</p>
+                    </div>
+                  </div>
+
+                  <div class="install-step-card">
+                    <span class="install-step-card__num">4</span>
+                    <div class="install-step-card__body">
+                      <strong>Inicia sesión con la demo</strong>
+                      <p>Abre VaultTecno y usa cualquiera de las credenciales de prueba de abajo. ¡No requiere registro!
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Aviso de seguridad Android -->
+              <aside class="security-notice" aria-label="Aviso de seguridad del sistema">
+                <div class="security-notice__icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                </div>
+                <div class="security-notice__text">
+                  <strong>¿Android muestra "¿Quieres descargar este archivo potencialmente dañino?"</strong>
+                  <p>
+                    Es el aviso preventivo estándar que Android muestra ante <strong>cualquier APK instalado fuera de la
+                      Play Store</strong>.
+                    El archivo está verificado, no contiene publicidad ni malware y está diseñado para evaluación del
+                    proyecto.
+                  </p>
+                </div>
+              </aside>
+
+            </div>
+
+          </div><!-- /.download-card -->
+
+        </div><!-- /.download-layout -->
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         RF-07 — CREDENCIALES DEMO (tarjetas interactivas con botón copiar)
+         ===================================================================== -->
+    <section class="section" id="credenciales" aria-labelledby="creds-title">
+      <div class="container">
+        <header class="section__header">
+          <span class="section__eyebrow">Acceso inmediato</span>
+          <h2 class="section__title" id="creds-title">Prueba con cuentas reales de demostración</h2>
+          <p class="section__desc">
+            El acceso es por invitación: en un negocio real el administrador crea los perfiles del taller.
+            Para probar la app, utiliza estas cuentas preconfiguradas con datos de muestra.
+          </p>
+        </header>
+
+        <div class="creds-grid">
+
+          <!-- Admin / Encargado -->
+          <article class="cred-card cred-card--admin" aria-labelledby="cred-admin-role">
+            <header class="cred-card__header">
+              <div class="cred-card__role-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <div class="cred-card__role-info">
+                <span class="cred-card__badge badge badge--available" id="cred-admin-role">Rol Encargado / Admin</span>
+                <h3 class="cred-card__title">Gestión, Stock y Auditoría</h3>
+              </div>
+            </header>
+
+            <p class="cred-card__desc">
+              Supervisa las reservas de todos los técnicos del taller, administra el catálogo maestro de repuestos y
+              filtra el historial global por técnico.
+            </p>
+
+            <div class="cred-card__capabilities" aria-label="Permisos del rol">
+              <span class="cap-tag">Auditoría global</span>
+              <span class="cap-tag">Control de mermas</span>
+              <span class="cap-tag">Filtro por técnico</span>
+              <span class="cap-tag">Catálogo maestro</span>
+            </div>
+
+            <div class="cred-fields">
+              <div class="cred-field">
+                <div class="cred-field__label-row">
+                  <span class="cred-field__label">Correo electrónico</span>
+                </div>
+                <div class="cred-field__value-row">
+                  <code class="cred-field__value" id="admin-email">admin@taller.com</code>
+                  <button class="btn-copy" data-copy-target="admin-email" type="button"
+                    aria-label="Copiar correo de administrador">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      aria-hidden="true">
+                      <rect x="9" y="9" width="13" height="13" rx="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span>Copiar</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="cred-field">
+                <div class="cred-field__label-row">
+                  <span class="cred-field__label">Contraseña</span>
+                </div>
+                <div class="cred-field__value-row">
+                  <code class="cred-field__value" id="admin-pass">password123</code>
+                  <button class="btn-copy" data-copy-target="admin-pass" type="button"
+                    aria-label="Copiar contraseña de administrador">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      aria-hidden="true">
+                      <rect x="9" y="9" width="13" height="13" rx="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span>Copiar</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Técnico / Empleado -->
+          <article class="cred-card cred-card--tech" aria-labelledby="cred-tech-role">
+            <header class="cred-card__header">
+              <div class="cred-card__role-icon" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                </svg>
+              </div>
+              <div class="cred-card__role-info">
+                <span class="cred-card__badge badge badge--reserved" id="cred-tech-role">Rol Técnico / Empleado</span>
+                <h3 class="cred-card__title">Operación Diaria y Mesa</h3>
+              </div>
+            </header>
+
+            <p class="cred-card__desc">
+              Explora repuestos, realiza reservas atómicas en tiempo real, gestiona piezas usadas o sobrantes y reporta
+              bajas por daño en mesa.
+            </p>
+
+            <div class="cred-card__capabilities" aria-label="Permisos del rol">
+              <span class="cap-tag">Reserva atómica</span>
+              <span class="cap-tag">Uso parcial</span>
+              <span class="cap-tag">Liberación al taller</span>
+              <span class="cap-tag">Baja por merma</span>
+            </div>
+
+            <div class="cred-fields">
+              <div class="cred-field">
+                <div class="cred-field__label-row">
+                  <span class="cred-field__label">Correo electrónico</span>
+                </div>
+                <div class="cred-field__value-row">
+                  <code class="cred-field__value" id="tech-email">tecnico@taller.com</code>
+                  <button class="btn-copy" data-copy-target="tech-email" type="button"
+                    aria-label="Copiar correo de técnico">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      aria-hidden="true">
+                      <rect x="9" y="9" width="13" height="13" rx="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span>Copiar</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="cred-field">
+                <div class="cred-field__label-row">
+                  <span class="cred-field__label">Contraseña</span>
+                </div>
+                <div class="cred-field__value-row">
+                  <code class="cred-field__value" id="tech-pass">password123</code>
+                  <button class="btn-copy" data-copy-target="tech-pass" type="button"
+                    aria-label="Copiar contraseña de técnico">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      aria-hidden="true">
+                      <rect x="9" y="9" width="13" height="13" rx="2" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                    <span>Copiar</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </div><!-- /.creds-grid -->
+
+        <aside class="creds-banner" aria-label="Información de la base de datos demo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2"
+            aria-hidden="true">
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+          </svg>
+          <p>
+            <strong>Ambiente de prueba seguro:</strong> Base de datos aislada con datos de demostración restaurables.
+            Puedes crear, reservar, liberar y dar de baja componentes sin alterar registros reales de taller.
+          </p>
+        </aside>
+
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         RF-09 — DECISIONES TÉCNICAS (acordeón accesible)
+         ===================================================================== -->
+    <section class="section section--subtle" id="detalles-tecnicos" aria-labelledby="tech-title">
+      <div class="container">
+        <header class="section__header">
+          <span class="section__eyebrow">Arquitectura y stack</span>
+          <h2 class="section__title" id="tech-title">Decisiones técnicas del proyecto</h2>
+          <p class="section__desc">
+            Detalles de ingeniería, seguridad y patrones de desarrollo aplicados en VaultTecno.
+          </p>
+        </header>
+
+        <div class="accordion-list" role="list">
+
+          <div class="accordion" role="listitem">
+            <button class="accordion__btn" type="button" aria-expanded="false" aria-controls="tech-1">
+              <span>Frontend Mobile: Flutter 3.x nativo (Dart 3)</span>
+              <svg class="accordion__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div id="tech-1" class="accordion__panel" hidden>
+              <p>Arquitectura por características (features). Navegación declarativa con <code>go_router</code> y rutas
+                protegidas por rol. Gestión de estado con <code>Provider / ChangeNotifier</code> para reactividad limpia
+                y sin dependencias pesadas.</p>
+            </div>
+          </div>
+
+          <div class="accordion" role="listitem">
+            <button class="accordion__btn" type="button" aria-expanded="false" aria-controls="tech-2">
+              <span>Backend y Base de Datos: Supabase (PostgreSQL)</span>
+              <svg class="accordion__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div id="tech-2" class="accordion__panel" hidden>
+              <p>BD relacional PostgreSQL con APIs REST inmediatas vía Supabase. Row Level Security (RLS) aplicado a
+                nivel de servidor para que un técnico nunca pueda leer o modificar reservas ajenas sin rol de admin.
+                Autenticación con tokens JWT vía Supabase Auth.</p>
+            </div>
+          </div>
+
+          <div class="accordion" role="listitem">
+            <button class="accordion__btn" type="button" aria-expanded="false" aria-controls="tech-3">
+              <span>Reservas atómicas: cómo se evita el doble-booking</span>
+              <svg class="accordion__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div id="tech-3" class="accordion__panel" hidden>
+              <p>La reserva ejecuta un
+                <code>UPDATE repuesto SET estado = 'reservado' WHERE id = $1 AND estado = 'disponible'</code>. Si otro
+                técnico ya lo tomó en el mismo milisegundo, el <code>rowCount</code> devuelve 0 y la app notifica el
+                conflicto y refresca el catálogo automáticamente. El modo es <em>online-only</em> para que nunca haya
+                datos obsoletos en caché local.
+              </p>
+            </div>
+          </div>
+
+          <div class="accordion" role="listitem">
+            <button class="accordion__btn" type="button" aria-expanded="false" aria-controls="tech-4">
+              <span>¿Por qué el acceso es por invitación y no hay registro público?</span>
+              <svg class="accordion__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div id="tech-4" class="accordion__panel" hidden>
+              <p>VaultTecno es una herramienta interna de taller: el encargado es quien conoce a su equipo y decide
+                quién tiene acceso. Un registro público abierto crearía usuarios no verificados con acceso a datos
+                sensibles del negocio. El flujo de onboarding correcto es: encargado crea cuenta → técnico inicia
+                sesión.</p>
+            </div>
+          </div>
+
+          <div class="accordion" role="listitem">
+            <button class="accordion__btn" type="button" aria-expanded="false" aria-controls="tech-5">
+              <span>Diferencias entre prototipo Figma y la app final</span>
+              <svg class="accordion__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div id="tech-5" class="accordion__panel" hidden>
+              <p>La app implementa manejo de errores en red, estados de carga con skeleton shimmer, validaciones de
+                formulario, anti-double-submit en botones de confirmación (<em>se deshabilitan durante la petición</em>)
+                y respuestas hápticas. El prototipo Figma es una maqueta de flujo sin lógica de error ni estados de
+                borde.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         RF-10 — SOLICITUD DE CUENTA PERSONALIZADA PARA TU TALLER
+         ===================================================================== -->
+    <section class="section" id="solicitar-cuenta" aria-labelledby="request-account-title">
+      <div class="container">
+        <header class="section__header">
+          <span class="section__eyebrow">Implementación personalizada</span>
+          <h2 class="section__title" id="request-account-title">¿Quieres una cuenta propia para tu taller?</h2>
+          <p class="section__desc">
+            Si deseas implementar VaultTecno con una base de datos exclusiva para tu negocio, configurar roles de
+            administradores y técnicos a medida, o cargar tu catálogo inicial de repuestos, contáctanos directamente.
+          </p>
+        </header>
+
+        <div class="request-account-card">
+          <div class="request-account-card__content">
+            <div class="request-account-card__header">
+              <div class="request-account-card__icon" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="request-account-card__title">Configuración a medida de tu taller</h3>
+                <p class="request-account-card__subtitle">Envíanos un correo con los detalles de tu equipo y preparamos
+                  tu entorno:</p>
+              </div>
+            </div>
+
+            <ul class="request-account-card__points">
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"
+                  aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span><strong>Cantidad de técnicos</strong> que operarán en mesa simultáneamente.</span>
+              </li>
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"
+                  aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span><strong>Roles de administración</strong> requeridos (encargados de stock, supervisores,
+                  auditores).</span>
+              </li>
+              <li>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"
+                  aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span><strong>Nombre del taller y ubicación</strong> para personalización de la base de datos y
+                  reportes.</span>
+              </li>
+            </ul>
+
+            <!-- Caja de contacto interactiva con email y botón de copia -->
+            <div class="request-email-box">
+              <div class="request-email-box__data">
+                <span class="request-email-box__label">Correo de contacto directo:</span>
+                <code class="request-email-box__email" id="contact-email">adolfo.mendoza.ribera@gmail.com</code>
+              </div>
+              <div class="request-email-box__actions">
+                <button class="btn-copy" data-copy-target="contact-email" type="button"
+                  aria-label="Copiar correo de contacto">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    aria-hidden="true">
+                    <rect x="9" y="9" width="13" height="13" rx="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                  <span>Copiar correo</span>
+                </button>
+                <a href="mailto:adolfo.mendoza.ribera@gmail.com?subject=Solicitud%20de%20Cuenta%20Personalizada%20-%20VaultTecno&body=Hola%2C%20quisiera%20solicitar%20una%20cuenta%20propia%20para%20mi%20taller%20en%20VaultTecno.%0A%0ADetalles%20de%20mi%20taller%3A%0A-%20Nombre%20del%20Taller%3A%20%0A-%20N%C3%BAmero%20de%20T%C3%A9cnicos%3A%20%0A-%20N%C3%BAmero%20de%20Encargados%2FAdministradores%3A%20%0A-%20Ciudad%20%2F%20Pa%C3%ADs%3A%20%0A-%20Notas%20o%20requerimientos%20especiales%3A%20%0A"
+                  class="btn btn--primary" id="email-cta-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    aria-hidden="true">
+                    <line x1="22" y1="2" x2="11" y2="13" />
+                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                  </svg>
+                  <span>Enviar solicitud por correo</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         RF-11 — FAQ (acordeón accesible sin la pregunta de Play Store)
+         ===================================================================== -->
+    <section class="section section--subtle" id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <header class="section__header">
+          <span class="section__eyebrow">Preguntas frecuentes</span>
+          <h2 class="section__title" id="faq-title">Resolvemos tus dudas</h2>
+        </header>
+
+        <div class="accordion-list accordion-list--faq" role="list">
+
+          <div class="accordion" role="listitem">
+            <button class="accordion__btn" type="button" aria-expanded="false" aria-controls="faq-1">
+              <span>¿Por qué Android muestra una advertencia al instalar el APK?</span>
+              <svg class="accordion__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div id="faq-1" class="accordion__panel" hidden>
+              <p>Es una alerta estándar de Android para cualquier archivo APK instalado fuera de la Play Store,
+                independientemente de si el archivo es seguro. Es el mismo aviso que genera cualquier app de empresa
+                distribuida internamente. Solo tienes que pulsar <em>"Instalar de todos modos"</em>.</p>
+            </div>
+          </div>
+
+          <div class="accordion" role="listitem">
+            <button class="accordion__btn" type="button" aria-expanded="false" aria-controls="faq-2">
+              <span>¿Es segura la aplicación?</span>
+              <svg class="accordion__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div id="faq-2" class="accordion__panel" hidden>
+              <p>Sí. No contiene código malicioso ni recopila datos personales. Toda la comunicación se realiza vía
+                HTTPS hacia Supabase. La base de datos de demo es independiente de cualquier dato productivo.</p>
+            </div>
+          </div>
+
+          <div class="accordion" role="listitem">
+            <button class="accordion__btn" type="button" aria-expanded="false" aria-controls="faq-3">
+              <span>¿Por qué no puedo registrarme con mi propia cuenta?</span>
+              <svg class="accordion__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div id="faq-3" class="accordion__panel" hidden>
+              <p>VaultTecno está diseñada para uso interno de taller: el acceso es por invitación. En un negocio real,
+                el encargado crea las cuentas de su equipo. Para la demo, usa las credenciales de la sección <a
+                  href="#credenciales" class="inline-link">Cuentas Demo</a> o solicita una cuenta personalizada en <a
+                  href="#solicitar-cuenta" class="inline-link">Solicitar Cuenta</a>.</p>
+            </div>
+          </div>
+
+          <div class="accordion" role="listitem">
+            <button class="accordion__btn" type="button" aria-expanded="false" aria-controls="faq-4">
+              <span>¿Funciona en iPhone (iOS)?</span>
+              <svg class="accordion__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div id="faq-4" class="accordion__panel" hidden>
+              <p>Por ahora, VaultTecno está optimizada exclusivamente para Android con distribución en formato APK. Una
+                versión para iOS requeriría la compilación y firma para la App Store de Apple.</p>
+            </div>
+          </div>
+
+          <div class="accordion" role="listitem">
+            <button class="accordion__btn" type="button" aria-expanded="false" aria-controls="faq-5">
+              <span>¿Los datos de la demo son datos reales de algún taller?</span>
+              <svg class="accordion__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div id="faq-5" class="accordion__panel" hidden>
+              <p>No. La base de datos de demostración contiene datos de ejemplo generados específicamente para pruebas.
+                No hay información real de clientes, empleados ni negocios.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /main -->
+
+  <!-- =====================================================================
+       RF-12 — FOOTER
+       ===================================================================== -->
+  <footer class="footer" role="contentinfo">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <a href="#hero" class="brand brand--footer" aria-label="VaultTecno inicio">
+          <svg width="22" height="22" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <rect width="32" height="32" rx="9" fill="#1E293B" />
+            <path d="M16 4L6 8v8c0 6.4 4.3 12.4 10 14 5.7-1.6 10-7.6 10-14V8L16 4z" fill="#0F172A" stroke="#10B981"
+              stroke-width="1.4" />
+            <circle cx="16" cy="12" r="2.2" fill="#10B981" />
+          </svg>
+          VaultTecno
+        </a>
+        <p class="footer__tag">Versión demo · Proyecto de Interacción Humano-Computador</p>
+      </div>
+      <nav class="footer__links" aria-label="Navegación del pie de página">
+        <a href="#como-funciona" class="footer__link">Cómo funciona</a>
+        <a href="#descargar" class="footer__link">Descargar APK</a>
+        <a href="#credenciales" class="footer__link">Demo</a>
+        <a href="#solicitar-cuenta" class="footer__link">Solicitar Cuenta</a>
+        <a href="#faq" class="footer__link">FAQ</a>
+      </nav>
+      <p class="footer__copy">© 2026 VaultTecno</p>
+    </div>
+  </footer>
+
+  <!-- =====================================================================
+       RF-14 — BARRA FLOTANTE MÓVIL (se oculta al ver #descargar)
+       ===================================================================== -->
+  <aside class="mobile-bar" id="mobile-floating-cta" aria-label="Descarga rápida para móvil" role="complementary">
+    <div class="mobile-bar__inner">
+      <div class="mobile-bar__info">
+        <span class="mobile-bar__name">VaultTecno</span>
+        <span class="mobile-bar__meta">v0.5 · Android · ~24 MB</span>
+      </div>
+      <a href="#descargar" class="btn btn--primary mobile-bar__cta">
+        Descargar APK
+      </a>
+    </div>
+  </aside>
+
+  <!-- Toast de descarga iniciada -->
+  <div id="download-toast" class="toast" role="status" aria-live="polite" aria-atomic="true">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+      aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+    Descarga iniciada — revisa tus notificaciones
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,221 @@
+<svg width="390" height="844" viewBox="0 0 390 844" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- FONDO DE PANTALLA -->
+  <rect width="390" height="844" fill="#F8FAFC"/>
+
+  <!-- STATUS BAR -->
+  <g id="StatusBar">
+    <text x="30" y="28" fill="#0F172A" font-family="Inter, sans-serif" font-size="13" font-weight="600">9:41</text>
+    <rect x="312" y="19" width="3" height="10" rx="1" fill="#0F172A"/>
+    <rect x="317" y="17" width="3" height="12" rx="1" fill="#0F172A"/>
+    <rect x="322" y="14" width="3" height="15" rx="1" fill="#0F172A"/>
+    <rect x="327" y="12" width="3" height="17" rx="1" fill="#0F172A"/>
+    <path d="M342 16C340 14 337 14 335 16M340.5 19C339 17.5 337.5 17.5 336 19M338.5 22H338" stroke="#0F172A" stroke-width="1.8" stroke-linecap="round"/>
+    <rect x="352" y="16" width="20" height="11" rx="3" stroke="#0F172A" stroke-width="1.2"/>
+    <rect x="354" y="18" width="13" height="7" rx="1.5" fill="#0F172A"/>
+    <path d="M373 20V23" stroke="#0F172A" stroke-width="1.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- HEADER DE PANTALLA -->
+  <g id="Header">
+    <rect x="0" y="38" width="390" height="66" fill="#FFFFFF"/>
+    
+    <!-- Título + Badge ADMIN -->
+    <text x="18" y="65" fill="#0F172A" font-family="Inter, sans-serif" font-size="20" font-weight="700">Historial y Trazabilidad</text>
+    <rect x="256" y="51" width="54" height="19" rx="5" fill="#EFF6FF" stroke="#BFDBFE"/>
+    <text x="264" y="64" fill="#1D4ED8" font-family="Inter, sans-serif" font-size="10" font-weight="700">ADMIN</text>
+
+    <!-- Subtítulo -->
+    <text x="18" y="85" fill="#64748B" font-family="Inter, sans-serif" font-size="12" font-weight="500">Trazabilidad global de repuestos en el taller</text>
+  </g>
+
+  <!-- TARJETAS MÉTRICAS (INSTALADOS / BAJAS) -->
+  <g id="MetricasResumen">
+    <!-- Tarjeta 1: Instalados (Verde) -->
+    <rect x="16" y="116" width="172" height="92" rx="16" fill="#E6F9F0" stroke="#A7F3D0" stroke-width="1.2"/>
+    <!-- Icono Check verde -->
+    <circle cx="44" cy="162" r="14" fill="#059669"/>
+    <path d="M38 162L42 166L50 157" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="68" y="152" fill="#0F172A" font-family="Inter, sans-serif" font-size="24" font-weight="700">1</text>
+    <text x="68" y="176" fill="#047857" font-family="Inter, sans-serif" font-size="12" font-weight="700">Instalados</text>
+
+    <!-- Tarjeta 2: Bajas / Merma (Rojo) -->
+    <rect x="202" y="116" width="172" height="92" rx="16" fill="#FEECEC" stroke="#FECACA" stroke-width="1.2"/>
+    <!-- Icono Menos rojo -->
+    <circle cx="230" cy="162" r="14" fill="#DC2626"/>
+    <line x1="223" y1="162" x2="237" y2="162" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+    <text x="254" y="152" fill="#0F172A" font-family="Inter, sans-serif" font-size="24" font-weight="700">2</text>
+    <text x="254" y="176" fill="#B91C1C" font-family="Inter, sans-serif" font-size="12" font-weight="700">Bajas / Merma</text>
+  </g>
+
+  <!-- BARRA DE BÚSQUEDA -->
+  <g id="SearchBar">
+    <rect x="16" y="222" width="358" height="46" rx="12" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <!-- Lupa -->
+    <circle cx="38" cy="245" r="6.5" stroke="#94A3B8" stroke-width="1.8"/>
+    <line x1="43" y1="249.5" x2="48.5" y2="255" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round"/>
+    <text x="60" y="250" fill="#94A3B8" font-family="Inter, sans-serif" font-size="13" font-weight="500">Buscar por pieza, equipo, motivo...</text>
+  </g>
+
+  <!-- FILTRO 1: TABS TIPO -->
+  <g id="FiltroTipo">
+    <!-- Botón Todos (Activo) -->
+    <rect x="16" y="282" width="112" height="38" rx="10" fill="#1E293B"/>
+    <text x="54" y="306" fill="#FFFFFF" font-family="Inter, sans-serif" font-size="13" font-weight="700">Todos</text>
+
+    <!-- Botón Instalados -->
+    <rect x="136" y="282" width="114" height="38" rx="10" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="152" cy="301" r="3.5" fill="#10B981"/>
+    <text x="162" y="306" fill="#475569" font-family="Inter, sans-serif" font-size="13" font-weight="600">Instalados</text>
+
+    <!-- Botón Bajas -->
+    <rect x="258" y="282" width="116" height="38" rx="10" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <circle cx="288" cy="301" r="3.5" fill="#EF4444"/>
+    <text x="298" y="306" fill="#475569" font-family="Inter, sans-serif" font-size="13" font-weight="600">Bajas</text>
+  </g>
+
+  <!-- FILTRO 2: PERÍODO -->
+  <g id="FiltroPeriodo">
+    <text x="16" y="347" fill="#64748B" font-family="Inter, sans-serif" font-size="12" font-weight="500">Período:</text>
+    
+    <!-- Todo (Activo) -->
+    <rect x="76" y="330" width="54" height="28" rx="8" fill="#FFFFFF" stroke="#1E293B" stroke-width="1.4"/>
+    <text x="88" y="348" fill="#1E293B" font-family="Inter, sans-serif" font-size="12" font-weight="700">Todo</text>
+
+    <!-- Hoy -->
+    <rect x="136" y="330" width="48" height="28" rx="8" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <text x="147" y="348" fill="#64748B" font-family="Inter, sans-serif" font-size="12" font-weight="500">Hoy</text>
+
+    <!-- Esta semana -->
+    <rect x="190" y="330" width="94" height="28" rx="8" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <text x="200" y="348" fill="#64748B" font-family="Inter, sans-serif" font-size="12" font-weight="500">Esta semana</text>
+
+    <!-- Este mes -->
+    <rect x="290" y="330" width="84" height="28" rx="8" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <text x="302" y="348" fill="#64748B" font-family="Inter, sans-serif" font-size="12" font-weight="500">Este mes</text>
+  </g>
+
+  <!-- FILTRO 3: TÉCNICO -->
+  <g id="FiltroTecnico">
+    <text x="16" y="387" fill="#64748B" font-family="Inter, sans-serif" font-size="12" font-weight="500">Técnico:</text>
+
+    <!-- Todos (Activo con check) -->
+    <rect x="76" y="370" width="88" height="30" rx="8" fill="#FFFFFF" stroke="#1E293B" stroke-width="1.4"/>
+    <path d="M88 385L92 389L99 381" stroke="#1E293B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="105" y="390" fill="#1E293B" font-family="Inter, sans-serif" font-size="12" font-weight="700">Todos</text>
+
+    <!-- tecnico@taller.com -->
+    <rect x="170" y="370" width="144" height="30" rx="8" fill="#FFFFFF" stroke="#E2E8F0"/>
+    <text x="180" y="390" fill="#64748B" font-family="Inter, sans-serif" font-size="11" font-weight="500">tecnico@taller.com</text>
+  </g>
+
+  <!-- LISTA DE TARJETAS DE MOVIMIENTO -->
+
+  <!-- TARJETA 1: TARJETA GRÁFICA (BAJA / MERMA) -->
+  <g id="Card_TarjetaGrafica_Baja">
+    <rect x="16" y="416" width="358" height="142" rx="16" fill="#FFFFFF" stroke="#E2E8F0"/>
+
+    <!-- Fila 1: Badge BAJA / MERMA + Badge OTROS -->
+    <rect x="32" y="432" width="128" height="24" rx="12" fill="#FEE2E2"/>
+    <circle cx="44" cy="444" r="3.5" fill="#DC2626"/>
+    <text x="53" y="448" fill="#DC2626" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.3">BAJA / MERMA</text>
+
+    <rect x="296" y="432" width="62" height="24" rx="6" fill="#EFF6FF"/>
+    <text x="307" y="448" fill="#1D4ED8" font-family="Inter, sans-serif" font-size="10" font-weight="700">OTROS</text>
+
+    <!-- Fila 2: Nombre del repuesto -->
+    <text x="32" y="482" fill="#0F172A" font-family="Inter, sans-serif" font-size="17" font-weight="700">Tarjeta grafica</text>
+
+    <!-- Fila 3: Razón de baja -->
+    <path d="M35 500L42 512H28L35 500Z" stroke="#EF4444" stroke-width="1.5" fill="#FEF2F2"/>
+    <line x1="35" y1="504" x2="35" y2="507" stroke="#EF4444" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="35" cy="509.5" r="0.75" fill="#EF4444"/>
+    <text x="48" y="509" fill="#475569" font-family="Inter, sans-serif" font-size="12" font-weight="600">
+      <tspan fill="#334155" font-weight="700">Razón de baja: </tspan>Baja: Pieza Rota / Daño Físic...
+    </text>
+
+    <!-- Fila 4: Footer Técnico + Fecha + Chevron -->
+    <!-- Icono Persona -->
+    <circle cx="36" cy="532" r="3.5" stroke="#94A3B8" stroke-width="1.2"/>
+    <path d="M30 541C30 538 33 536.5 36 536.5C39 536.5 42 538 42 541" stroke="#94A3B8" stroke-width="1.2"/>
+    <text x="46" y="538" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="600">Técnico asignado</text>
+
+    <!-- Icono Reloj -->
+    <circle cx="198" cy="534" r="5" stroke="#94A3B8" stroke-width="1.2"/>
+    <path d="M198 531V534L200.5 536" stroke="#94A3B8" stroke-width="1.2"/>
+    <text x="208" y="538" fill="#64748B" font-family="Inter, sans-serif" font-size="11" font-weight="500">20/09/2026 · 19:33</text>
+
+    <!-- Chevron > -->
+    <path d="M346 532L350 536L346 540" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- TARJETA 2: PC (INSTALADO) -->
+  <g id="Card_Pc_Instalado">
+    <rect x="16" y="570" width="358" height="142" rx="16" fill="#FFFFFF" stroke="#E2E8F0"/>
+
+    <!-- Fila 1: Badge INSTALADO + Badge PANTALLAS -->
+    <rect x="32" y="586" width="110" height="24" rx="12" fill="#ECFDF5"/>
+    <circle cx="44" cy="598" r="3.5" fill="#059669"/>
+    <text x="53" y="602" fill="#059669" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.3">INSTALADO</text>
+
+    <rect x="272" y="586" width="86" height="24" rx="6" fill="#EFF6FF"/>
+    <text x="281" y="602" fill="#1D4ED8" font-family="Inter, sans-serif" font-size="10" font-weight="700">PANTALLAS</text>
+
+    <!-- Fila 2: Nombre del repuesto -->
+    <text x="32" y="636" fill="#0F172A" font-family="Inter, sans-serif" font-size="17" font-weight="700">Pc</text>
+
+    <!-- Fila 3: Equipo Destino -->
+    <rect x="30" y="652" width="14" height="10" rx="1.5" stroke="#3B82F6" stroke-width="1.2" fill="#EFF6FF"/>
+    <text x="48" y="661" fill="#475569" font-family="Inter, sans-serif" font-size="12" font-weight="600">
+      <tspan fill="#334155" font-weight="700">Equipo destino: </tspan>NVIDIA
+    </text>
+
+    <!-- Fila 4: Footer Técnico + Fecha + Chevron -->
+    <circle cx="36" cy="686" r="3.5" stroke="#94A3B8" stroke-width="1.2"/>
+    <path d="M30 695C30 692 33 690.5 36 690.5C39 690.5 42 692 42 695" stroke="#94A3B8" stroke-width="1.2"/>
+    <text x="46" y="692" fill="#475569" font-family="Inter, sans-serif" font-size="11" font-weight="600">tecnico@taller.com</text>
+
+    <circle cx="198" cy="688" r="5" stroke="#94A3B8" stroke-width="1.2"/>
+    <path d="M198 685V688L200.5 690" stroke="#94A3B8" stroke-width="1.2"/>
+    <text x="208" y="692" fill="#64748B" font-family="Inter, sans-serif" font-size="11" font-weight="500">17/09/2026 · 21:58</text>
+
+    <path d="M346 686L350 690L346 694" stroke="#94A3B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- BARRA DE NAVEGACIÓN INFERIOR (BOTTOM NAV) EXACTA -->
+  <g id="BottomNav">
+    <rect x="0" y="756" width="390" height="88" fill="#FFFFFF"/>
+    <line x1="0" y1="756" x2="390" y2="756" stroke="#F1F5F9" stroke-width="1"/>
+
+    <!-- Tab 1: Inicio (4 cubos) -->
+    <g id="Tab_Inicio">
+      <rect x="36" y="768" width="8" height="8" rx="2" fill="#64748B"/>
+      <rect x="47" y="768" width="8" height="8" rx="2" fill="#64748B"/>
+      <rect x="36" y="779" width="8" height="8" rx="2" fill="#64748B"/>
+      <rect x="47" y="779" width="8" height="8" rx="2" fill="#64748B"/>
+      <text x="33" y="804" fill="#64748B" font-family="Inter, sans-serif" font-size="11" font-weight="600">Inicio</text>
+    </g>
+
+    <!-- Tab 2: Repuestos (Cajón/Box) -->
+    <g id="Tab_Repuestos">
+      <rect x="136" y="768" width="20" height="18" rx="3" stroke="#64748B" stroke-width="1.8"/>
+      <line x1="136" y1="775" x2="156" y2="775" stroke="#64748B" stroke-width="1.5"/>
+      <text x="114" y="804" fill="#64748B" font-family="Inter, sans-serif" font-size="11" font-weight="600">Repuestos</text>
+    </g>
+
+    <!-- Tab 3: Reservas (Cinta Bookmark) -->
+    <g id="Tab_Reservas">
+      <path d="M239 768H253V788L246 783L239 788V768Z" stroke="#64748B" stroke-width="1.8" stroke-linejoin="round"/>
+      <text x="220" y="804" fill="#64748B" font-family="Inter, sans-serif" font-size="11" font-weight="600">Reservas</text>
+    </g>
+
+    <!-- Tab 4: Historial (ACTIVO - Reloj con píldora suave) -->
+    <g id="Tab_Historial_Activo">
+      <!-- Píldora de fondo celeste suave -->
+      <rect x="306" y="764" width="66" height="30" rx="15" fill="#EFF6FF"/>
+      <!-- Icono Reloj circular con flecha de recarga -->
+      <circle cx="339" cy="779" r="7.5" stroke="#0F172A" stroke-width="1.8"/>
+      <path d="M339 775V779L342 781" stroke="#0F172A" stroke-width="1.8" stroke-linecap="round"/>
+      <text x="318" y="804" fill="#0F172A" font-family="Inter, sans-serif" font-size="11" font-weight="700">Historial</text>
+    </g>
+  </g>
+</svg>

@@ -90,9 +90,21 @@ No compite con los demás, es la base de navegación de la que cuelga todo. Cons
 
 ---
 
-## 6. BACKLOG (siguientes flujos, en orden de prioridad)
+## 5. FLUJO 5 — Historial y Trazabilidad de Reparaciones
 
-- [ ] **Historial y Trazabilidad de Reparaciones** (tu "Opción 1"): lista de consumidos con filtros (hoy/semana/equipo/técnico), ficha de trazabilidad, export. Solo lectura — no necesita anti-double-submit, sí estado Empty y paginación (>20 items).
+**Estado:** ✅ **Completado y validado**.
+- [x] Lista de trazabilidad con consulta unificada (`estado in ('usado', 'baja')`).
+- [x] Micro-KPIs: total de repuestos instalados y total dados de baja/merma.
+- [x] Filtros rápidos tipo chip: Por período (*Hoy, Esta semana, Este mes, Todo*) y por tipo (*Todos, Instalados, Bajas*).
+- [x] Búsqueda predictiva con debounce por repuesto, destino, motivo o técnico.
+- [x] Filtro de técnico para rol `admin`.
+- [x] Ficha de trazabilidad completa de solo lectura (`DetalleHistorialSheet`) con destino, motivo, notas, SKU, fecha y técnico.
+- [x] 4 estados de borde (Skeleton loading, Empty State con reseteo de filtros, Error con reintento, Overflow en ListView con Pull-to-refresh).
+
+---
+
+## 6. BACKLOG (siguiente flujo)
+
 - [ ] **Solicitud de Repuesto Faltante** (tu "Opción 3"): botón "Solicitar Pieza Faltante" desde zero-results de Flujo 1, formulario rápido (equipo + urgencia), pestaña "Mis Solicitudes Pendientes". Va último porque depende de un proceso de compras fuera de la app.
 
 ---
