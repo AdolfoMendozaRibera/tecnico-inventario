@@ -2,12 +2,12 @@
   "rewrites": [
     {
       "source": "/download",
-      "destination": "/pagina_web/downloads/app-v0.5.apk"
+      "destination": "/downloads/vaulttecno-v0.5.apk"
     }
   ],
   "headers": [
     {
-      "source": "/pagina_web/downloads/(.*)\\.apk",
+      "source": "/downloads/(.*)\\.apk",
       "headers": [
         {
           "key": "Content-Disposition",
