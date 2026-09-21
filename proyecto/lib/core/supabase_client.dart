@@ -1,10 +1,14 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SupabaseService {
   static Future<void> initialize() async {
+    // Las credenciales se leen desde el archivo .env (excluido del repo por .gitignore)
+    await dotenv.load(fileName: '.env');
+
     await Supabase.initialize(
-      url: 'https://ywpwpxxlfcdhjcpyuyob.supabase.co',
-      publishableKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3cHdweHhsZmNkaGpjcHl1eW9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNzc3NTAsImV4cCI6MjEwMjc1Mzc1MH0.sSyfA175f77tkgsnfneHFxLRhwou2Qo_t96jnzIadl0',
+      url: dotenv.get('SUPABASE_URL'),
+      anonKey: dotenv.get('SUPABASE_ANON_KEY'),
     );
   }
 
