@@ -2902,3 +2902,48 @@ ol {
   color: var(--navy);
   font-weight: 700;
 }
+
+/* ── FIX DESBORDE HORIZONTAL EN MÓVIL ───────────────────────── */
+
+/* 1. Los botones deben poder encoger y partir línea */
+.btn {
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 559px) {
+  .btn--lg {
+    white-space: normal;
+    padding-inline: var(--s-4);
+    font-size: var(--text-base);
+    line-height: 1.25;
+  }
+}
+
+/* 2. Los ítems flex/grid no encogen por debajo de su contenido
+      salvo que se lo pidas explícitamente */
+.download-card,
+.download-card__main,
+.download-card__cta,
+.download-layout {
+  min-width: 0;
+}
+
+.download-card__cta>* {
+  max-width: 100%;
+}
+
+/* 3. Que el ellipsis del hash funcione de verdad */
+.download-hash {
+  min-width: 0;
+}
+
+.download-hash__info {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.download-hash code {
+  display: block;
+  min-width: 0;
+}
