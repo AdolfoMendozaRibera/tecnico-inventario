@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -74,6 +75,43 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
+  }
+
+  Future<void> _abrirUrl(BuildContext context, String urlString) async {
+    final uri = Uri.parse(urlString);
+    try {
+      final lanzada = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!lanzada) {
+        await launchUrl(uri);
+      }
+    } catch (_) {
+      try {
+        await launchUrl(uri);
+      } catch (e) {
+        if (context.mounted) {
+          _copiarAlPortapapeles(context, urlString, 'No se pudo abrir el navegador. Enlace copiado.');
+        }
+      }
+    }
+  }
+
+  void _copiarAlPortapapeles(BuildContext context, String texto, String mensaje) {
+    Clipboard.setData(ClipboardData(text: texto));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle_outline_rounded, color: Colors.white, size: 20),
+            const SizedBox(width: 8),
+            Expanded(child: Text(mensaje)),
+          ],
+        ),
+        backgroundColor: AppColors.slate900,
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
   }
 
   Future<void> _mostrarDialogoRestablecimiento(BuildContext context) async {
@@ -373,10 +411,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   // ─── INFORMACIÓN DE SOPORTE / CONTACTO ────────────────────
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: AppColors.slate50,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: AppColors.slate200),
                     ),
                     child: Column(
@@ -400,32 +438,118 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 6),
-                        GestureDetector(
-                          onTap: () async {
-                            final url = Uri.parse('https://tecnico-inventario.vercel.app');
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(url, mode: LaunchMode.externalApplication);
-                            }
-                          },
-                          child: Text(
-                            'https://tecnico-inventario.vercel.app',
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.primary,
-                              decoration: TextDecoration.underline,
-                              decorationColor: AppColors.primary,
+                        const SizedBox(height: 10),
+
+                        // Botón táctil para Abrir la Página Web
+                        Material(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          child: InkWell(
+                            onTap: () => _abrirUrl(context, 'https://tecnico-inventario.vercel.app'),
+                            borderRadius: BorderRadius.circular(10),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.language_rounded,
+                                      size: 18,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Visitar sitio web oficial',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.slate900,
+                                          ),
+                                        ),
+                                        Text(
+                                          'tecnico-inventario.vercel.app',
+                                          style: GoogleFonts.inter(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.primary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.copy_rounded, size: 16, color: AppColors.slate400),
+                                    tooltip: 'Copiar enlace',
+                                    onPressed: () => _copiarAlPortapapeles(
+                                      context,
+                                      'https://tecnico-inventario.vercel.app',
+                                      'Enlace web copiado al portapapeles',
+                                    ),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  const Icon(
+                                    Icons.open_in_new_rounded,
+                                    size: 16,
+                                    color: AppColors.primary,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'o escribe a adolfomendozaribera30@gmail.com',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
-                            fontSize: 11,
-                            color: AppColors.slate500,
+
+                        const SizedBox(height: 8),
+
+                        // Fila interactiva para el Correo (tocar para copiar / abrir correo)
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => _copiarAlPortapapeles(
+                              context,
+                              'adolfomendozaribera30@gmail.com',
+                              'Correo copiado al portapapeles',
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.mail_outline_rounded, size: 14, color: AppColors.slate500),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      'adolfomendozaribera30@gmail.com',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.slate600,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: AppColors.slate400,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.copy_rounded, size: 12, color: AppColors.slate400),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ],
