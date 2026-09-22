@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="8" fill="#0F172A"/>
+  <!-- Escudo / Caja de VaultTecno -->
+  <path d="M16 4L6 8v8c0 6.5 4.3 12.5 10 14 5.7-1.5 10-7.5 10-14V8L16 4z" fill="#1E293B" stroke="#10B981" stroke-width="1.5"/>
+  <!-- Llave o engranaje interior / V -->
+  <path d="M11 13l5 5 5-5" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <circle cx="16" cy="11" r="2" fill="#10B981"/>
+</svg>

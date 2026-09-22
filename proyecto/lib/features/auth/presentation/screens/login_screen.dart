@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
@@ -94,58 +95,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   // ─── LOGO OFICIAL VAULTTECNO ─────────────────────────────
                   Center(
-                    child: Container(
+                    child: Image.asset(
+                      'assets/icono.png',
                       width: 88,
                       height: 88,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.25),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                        gradient: const LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF334155), // Slate 700
-                            Color(0xFF0F172A), // Slate 900
-                          ],
-                        ),
-                      ),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          // Acento ámbar de seguridad/bóveda
-                          Positioned(
-                            top: 14,
-                            right: 14,
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: AppColors.secondary,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                          const Icon(
-                            Icons.shield_rounded,
-                            size: 42,
-                            color: Colors.white,
-                          ),
-                          const Positioned(
-                            child: Icon(
-                              Icons.lock_rounded,
-                              size: 18,
-                              color: Color(0xFF0F172A),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
