@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
-        android:label="reservas_taller"
+        android:label="VaultTecno"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
