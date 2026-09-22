@@ -39,17 +39,36 @@ class AuthProvider extends ChangeNotifier {
     _detectRoleFromUser();
   }
 
-  void _detectRoleFromUser() {
+  Future<void> _detectRoleFromUser() async {
     if (_currentUser == null) {
       _currentRole = UserRole.empleado;
       return;
     }
-    final metadata = _currentUser!.userMetadata;
-    final roleStr = metadata?['role']?.toString().toLowerCase() ?? '';
-    if (roleStr == 'admin' || _currentUser!.email?.contains('admin') == true) {
-      _currentRole = UserRole.admin;
-    } else {
-      _currentRole = UserRole.empleado;
+
+    try {
+      final data = await SupabaseService.client
+          .from('tecnico')
+          .select('rol')
+          .eq('auth_id', _currentUser!.id)
+          .maybeSingle();
+
+      if (data != null && data['rol'] != null) {
+        final rolStr = data['rol'].toString().toLowerCase();
+        _currentRole = (rolStr == 'admin') ? UserRole.admin : UserRole.empleado;
+      } else {
+        final metadataRole = _currentUser!.userMetadata?['role']?.toString().toLowerCase();
+        if (metadataRole == 'admin' || _currentUser!.email?.contains('admin') == true) {
+          _currentRole = UserRole.admin;
+        } else {
+          _currentRole = UserRole.empleado;
+        }
+      }
+    } catch (_) {
+      if (_currentUser!.email?.contains('admin') == true) {
+        _currentRole = UserRole.admin;
+      } else {
+        _currentRole = UserRole.empleado;
+      }
     }
     notifyListeners();
   }
@@ -73,11 +92,7 @@ class AuthProvider extends ChangeNotifier {
       );
 
       _currentUser = response.user;
-      if (preferredRole != null) {
-        _currentRole = preferredRole;
-      } else {
-        _detectRoleFromUser();
-      }
+      await _detectRoleFromUser();
 
       _isLoading = false;
       notifyListeners();
@@ -87,6 +102,16 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return false;
+    }
+  }
+
+  /// Solicita restablecimiento de contraseña por correo electrónico
+  Future<String?> resetPassword(String email) async {
+    try {
+      await SupabaseService.client.auth.resetPasswordForEmail(email.trim());
+      return null; // null = éxito
+    } catch (e) {
+      return 'No se pudo enviar el correo. Verifica que el correo sea correcto.';
     }
   }
 

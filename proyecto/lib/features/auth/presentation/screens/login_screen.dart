@@ -18,7 +18,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController(text: 'carlos.tecnico@taller.com');
+  final _emailController = TextEditingController(text: 'tecnico@taller.com');
   final _passwordController = TextEditingController(text: '123456');
   bool _obscurePassword = true;
   UserRole _selectedRole = UserRole.empleado;
@@ -34,9 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _selectedRole = role;
       if (role == UserRole.admin) {
-        _emailController.text = 'admin.taller@taller.com';
+        _emailController.text = 'admin@taller.com';
       } else {
-        _emailController.text = 'carlos.tecnico@taller.com';
+        _emailController.text = 'tecnico@taller.com';
       }
     });
   }
@@ -74,6 +74,113 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
+  }
+
+  Future<void> _mostrarDialogoRestablecimiento(BuildContext context) async {
+    final emailController = TextEditingController(text: _emailController.text);
+    bool enviando = false;
+    bool enviado = false;
+    String? errorMsg;
+
+    await showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              backgroundColor: AppColors.background,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Text(
+                'Restablecer contraseña',
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: AppColors.textNight,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (!enviado) ...[
+                    Text(
+                      'Ingresa tu correo registrado y te enviaremos un enlace para restablecer tu contraseña.',
+                      style: GoogleFonts.inter(fontSize: 13, color: AppColors.slate500),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      enabled: !enviando,
+                      decoration: InputDecoration(
+                        labelText: 'Correo electrónico',
+                        prefixIcon: const Icon(Icons.mail_outline_rounded),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    ),
+                    if (errorMsg != null) ...[
+                      const SizedBox(height: 8),
+                      Text(errorMsg!, style: GoogleFonts.inter(fontSize: 12, color: AppColors.error)),
+                    ],
+                  ] else ...[
+                    Row(
+                      children: [
+                        const Icon(Icons.check_circle_rounded, color: Colors.green, size: 28),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            '¡Correo enviado! Revisa tu bandeja de entrada y sigue las instrucciones.',
+                            style: GoogleFonts.inter(fontSize: 13, color: AppColors.textNight),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+              actions: enviado
+                  ? [
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: const Text('Cerrar'),
+                      ),
+                    ]
+                  : [
+                      TextButton(
+                        onPressed: enviando ? null : () => Navigator.of(ctx).pop(),
+                        child: const Text('Cancelar'),
+                      ),
+                      FilledButton(
+                        onPressed: enviando
+                            ? null
+                            : () async {
+                                setDialogState(() {
+                                  enviando = true;
+                                  errorMsg = null;
+                                });
+                                final authProvider = context.read<AuthProvider>();
+                                final error = await authProvider.resetPassword(emailController.text);
+                                setDialogState(() {
+                                  enviando = false;
+                                  if (error == null) {
+                                    enviado = true;
+                                  } else {
+                                    errorMsg = error;
+                                  }
+                                });
+                              },
+                        child: enviando
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : const Text('Enviar instrucciones'),
+                      ),
+                    ],
+            );
+          },
+        );
+      },
+    );
+    emailController.dispose();
   }
 
   @override
@@ -249,15 +356,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // ─── AYUDA / RECUPERACIÓN ─────────────────────────────────
                   Center(
                     child: TextButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Contacta al encargado del taller para restablecer o solicitar credenciales.',
-                            ),
-                          ),
-                        );
-                      },
+                      onPressed: () => _mostrarDialogoRestablecimiento(context),
                       child: Text(
                         '¿Olvidaste tu contraseña?',
                         style: GoogleFonts.inter(
