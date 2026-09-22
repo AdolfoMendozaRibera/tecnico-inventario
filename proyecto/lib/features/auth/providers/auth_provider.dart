@@ -97,8 +97,13 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return true;
+    } on AuthException catch (e) {
+      _errorMessage = e.message;
+      _isLoading = false;
+      notifyListeners();
+      return false;
     } catch (e) {
-      _errorMessage = 'Credenciales incorrectas o error de conexión.';
+      _errorMessage = 'Error de conexión o configuración: ${e.toString()}';
       _isLoading = false;
       notifyListeners();
       return false;
