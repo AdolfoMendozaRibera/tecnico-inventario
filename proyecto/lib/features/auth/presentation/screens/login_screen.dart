@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../providers/auth_provider.dart';
@@ -115,6 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       enabled: !enviando,
                       decoration: InputDecoration(
                         labelText: 'Correo electrónico',
+                        hintText: 'ej: usuario@correo.com',
                         prefixIcon: const Icon(Icons.mail_outline_rounded),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                       ),
@@ -400,13 +401,22 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        SelectableText(
-                          'https://tecnico-inventario.vercel.app',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.primary,
-                            decoration: TextDecoration.underline,
+                        GestureDetector(
+                          onTap: () async {
+                            final url = Uri.parse('https://tecnico-inventario.vercel.app');
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url, mode: LaunchMode.externalApplication);
+                            }
+                          },
+                          child: Text(
+                            'https://tecnico-inventario.vercel.app',
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.primary,
+                              decoration: TextDecoration.underline,
+                              decorationColor: AppColors.primary,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 4),

@@ -113,10 +113,27 @@ class AuthProvider extends ChangeNotifier {
   /// Solicita restablecimiento de contraseña por correo electrónico
   Future<String?> resetPassword(String email) async {
     try {
-      await SupabaseService.client.auth.resetPasswordForEmail(email.trim());
+      await SupabaseService.client.auth.resetPasswordForEmail(
+        email.trim(),
+        redirectTo: 'io.supabase.flutter://reset-callback',
+      );
       return null; // null = éxito
     } catch (e) {
       return 'No se pudo enviar el correo. Verifica que el correo sea correcto.';
+    }
+  }
+
+  /// Actualiza la contraseña del usuario actualmente autenticado (tras recuperar clave)
+  Future<String?> updatePassword(String newPassword) async {
+    try {
+      await SupabaseService.client.auth.updateUser(
+        UserAttributes(password: newPassword.trim()),
+      );
+      return null; // null = éxito
+    } on AuthException catch (e) {
+      return e.message;
+    } catch (e) {
+      return 'Error al actualizar la contraseña: ${e.toString()}';
     }
   }
 
